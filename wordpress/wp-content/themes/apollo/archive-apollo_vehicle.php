@@ -18,13 +18,15 @@ get_header();
 	<section class="apollo-catalog apollo-shell">
 		<div class="apollo-vehicle-grid">
 			<?php if ( have_posts() ) : ?>
+				<?php $vehicle_fallbacks = array( 'a1.webp', 'a2.webp', 'a6.webp', 'a8.webp', 'a9.webp' ); ?>
+				<?php $vehicle_index = 0; ?>
 				<?php while ( have_posts() ) : the_post(); ?>
 					<article class="apollo-vehicle-card">
 						<a class="apollo-vehicle-card__image" href="<?php the_permalink(); ?>">
 							<?php if ( has_post_thumbnail() ) : ?>
-								<?php the_post_thumbnail( 'large', array( 'loading' => 'lazy' ) ); ?>
+								<?php the_post_thumbnail( 'large', array( 'loading' => 'lazy', 'alt' => esc_attr( get_the_title() ) ) ); ?>
 							<?php else : ?>
-								<img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/apollo-detail.svg' ); ?>" alt="<?php echo esc_attr( get_the_title() ); ?>" loading="lazy">
+								<img src="<?php echo esc_url( get_stylesheet_directory_uri() . '/assets/images/' . $vehicle_fallbacks[ $vehicle_index % count( $vehicle_fallbacks ) ] ); ?>" alt="<?php echo esc_attr( get_the_title() ); ?>" loading="lazy">
 							<?php endif; ?>
 						</a>
 						<div class="apollo-card__body">
@@ -34,6 +36,7 @@ get_header();
 							<div class="apollo-card__action"><a class="apollo-button" href="<?php the_permalink(); ?>"><?php esc_html_e( 'Xem chi tiết', 'apollo' ); ?></a></div>
 						</div>
 					</article>
+					<?php $vehicle_index++; ?>
 				<?php endwhile; ?>
 				<div class="apollo-pagination"><?php the_posts_pagination(); ?></div>
 			<?php else : ?>

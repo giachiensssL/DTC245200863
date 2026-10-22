@@ -5,7 +5,7 @@
  * @package apollo
  */
 
-if ( 'product' === get_query_var( 'post_type' ) && function_exists( 'woocommerce_product_loop' ) ) {
+if ( in_array( 'product', (array) get_query_var( 'post_type' ), true ) && function_exists( 'woocommerce_product_loop' ) ) {
 	include get_stylesheet_directory() . '/archive-product.php';
 	return;
 }

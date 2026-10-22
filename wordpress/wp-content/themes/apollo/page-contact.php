@@ -6,6 +6,10 @@
  */
 
 get_header();
+$contact_address = get_theme_mod( 'apollo_contact_address', '119 Nguyễn Đức Cảnh, Q.7, TP.HCM' );
+$contact_phone   = get_theme_mod( 'apollo_contact_phone', '0941 234 567' );
+$contact_email   = get_theme_mod( 'apollo_contact_email', '' );
+$contact_email   = $contact_email ? $contact_email : get_option( 'admin_email' );
 ?>
 <main id="primary">
 	<section class="apollo-page-heading">
@@ -20,7 +24,25 @@ get_header();
 			<div>
 				<span class="apollo-eyebrow"><?php esc_html_e( 'Liên hệ tư vấn', 'apollo' ); ?></span>
 				<h2><?php esc_html_e( 'Chúng tôi sẵn sàng lắng nghe', 'apollo' ); ?></h2>
-				<div class="entry-content"><?php the_content(); ?></div>
+				<div class="entry-content">
+					<?php if ( trim( wp_strip_all_tags( get_the_content() ) ) ) : ?>
+						<?php the_content(); ?>
+					<?php else : ?>
+						<p><?php esc_html_e( 'Gửi thông tin qua biểu mẫu. Nội dung sẽ giúp chúng tôi hiểu yêu cầu tư vấn của bạn.', 'apollo' ); ?></p>
+					<?php endif; ?>
+				</div>
+				<div class="apollo-contact-details">
+					<h3><?php esc_html_e( 'Thông tin liên hệ', 'apollo' ); ?></h3>
+					<?php if ( $contact_address ) : ?>
+						<p><span><?php esc_html_e( 'ĐỊA CHỈ', 'apollo' ); ?></span><?php echo esc_html( $contact_address ); ?></p>
+					<?php endif; ?>
+					<?php if ( $contact_phone ) : ?>
+						<p><span><?php esc_html_e( 'ĐIỆN THOẠI', 'apollo' ); ?></span><a href="tel:<?php echo esc_attr( preg_replace( '/\D/', '', $contact_phone ) ); ?>"><?php echo esc_html( $contact_phone ); ?></a></p>
+					<?php endif; ?>
+					<?php if ( $contact_email ) : ?>
+						<p><span><?php esc_html_e( 'EMAIL', 'apollo' ); ?></span><a href="mailto:<?php echo esc_attr( $contact_email ); ?>"><?php echo esc_html( $contact_email ); ?></a></p>
+					<?php endif; ?>
+				</div>
 			</div>
 			<div>
 				<?php

@@ -69,15 +69,118 @@ function apollo_register_vehicle_type() {
 }
 add_action( 'init', 'apollo_register_vehicle_type', 20 );
 
+function apollo_add_vehicle_specs_meta_box() {
+	add_meta_box(
+		'apollo_vehicle_specs',
+		__( 'Thông tin mẫu xe', 'apollo' ),
+		'apollo_render_vehicle_specs_meta_box',
+		'apollo_vehicle',
+		'normal',
+		'high'
+	);
+}
+add_action( 'add_meta_boxes_apollo_vehicle', 'apollo_add_vehicle_specs_meta_box' );
+
+function apollo_render_vehicle_specs_meta_box( $post ) {
+	wp_nonce_field( 'apollo_save_vehicle_specs', 'apollo_vehicle_specs_nonce' );
+	$specs = get_post_meta( $post->ID, '_apollo_specs', true );
+	?>
+	<p>
+		<label for="apollo-vehicle-specs"><?php esc_html_e( 'Thông số hoặc dòng giới thiệu ngắn (chỉ nhập thông tin đã xác minh).', 'apollo' ); ?></label>
+	</p>
+	<textarea id="apollo-vehicle-specs" name="apollo_vehicle_specs" rows="3" class="widefat"><?php echo esc_textarea( $specs ); ?></textarea>
+	<p class="description"><?php esc_html_e( 'Ảnh đại diện có thể chọn trong mục Ảnh đại diện ở thanh bên khi sửa mẫu xe.', 'apollo' ); ?></p>
+	<?php
+}
+
+function apollo_save_vehicle_specs( $post_id ) {
+	if (
+		! isset( $_POST['apollo_vehicle_specs_nonce'] )
+		|| ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['apollo_vehicle_specs_nonce'] ) ), 'apollo_save_vehicle_specs' )
+		|| ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE )
+		|| wp_is_post_revision( $post_id )
+		|| ! current_user_can( 'edit_post', $post_id )
+		|| ! isset( $_POST['apollo_vehicle_specs'] )
+	) {
+		return;
+	}
+
+	$specs = sanitize_textarea_field( wp_unslash( $_POST['apollo_vehicle_specs'] ) );
+	if ( '' === $specs ) {
+		delete_post_meta( $post_id, '_apollo_specs' );
+		return;
+	}
+
+	update_post_meta( $post_id, '_apollo_specs', $specs );
+}
+add_action( 'save_post_apollo_vehicle', 'apollo_save_vehicle_specs' );
+
+function apollo_register_admin_dashboard_widget() {
+	if ( ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+
+	wp_add_dashboard_widget(
+		'apollo_admin_overview',
+		__( 'Tổng quan quản trị Apollo', 'apollo' ),
+		'apollo_render_admin_dashboard_widget'
+	);
+}
+add_action( 'wp_dashboard_setup', 'apollo_register_admin_dashboard_widget' );
+
+function apollo_render_admin_dashboard_widget() {
+	$vehicles = wp_count_posts( 'apollo_vehicle' );
+	$products = wp_count_posts( 'product' );
+	$categories = wp_count_terms(
+		array(
+			'taxonomy'   => 'product_cat',
+			'hide_empty' => false,
+		)
+	);
+	$users = count_users();
+	?>
+	<div class="apollo-admin-overview">
+		<p><?php esc_html_e( 'Quản lý dữ liệu trực tiếp trên website WordPress. Thay đổi tại đây được lưu vào database của hệ thống.', 'apollo' ); ?></p>
+		<div class="apollo-admin-overview__stats">
+			<div><strong><?php echo esc_html( number_format_i18n( (int) $vehicles->publish ) ); ?></strong><span><?php esc_html_e( 'Mẫu xe', 'apollo' ); ?></span></div>
+			<div><strong><?php echo esc_html( number_format_i18n( (int) $products->publish ) ); ?></strong><span><?php esc_html_e( 'Sản phẩm', 'apollo' ); ?></span></div>
+			<div><strong><?php echo esc_html( is_wp_error( $categories ) ? '—' : number_format_i18n( (int) $categories ) ); ?></strong><span><?php esc_html_e( 'Danh mục', 'apollo' ); ?></span></div>
+			<div><strong><?php echo esc_html( number_format_i18n( (int) $users['total_users'] ) ); ?></strong><span><?php esc_html_e( 'Tài khoản', 'apollo' ); ?></span></div>
+		</div>
+		<div class="apollo-admin-overview__links">
+			<a class="button button-primary" href="<?php echo esc_url( admin_url( 'post-new.php?post_type=apollo_vehicle' ) ); ?>"><?php esc_html_e( 'Thêm mẫu xe', 'apollo' ); ?></a>
+			<a class="button" href="<?php echo esc_url( admin_url( 'edit.php?post_type=apollo_vehicle' ) ); ?>"><?php esc_html_e( 'Quản lý bộ sưu tập xe', 'apollo' ); ?></a>
+			<a class="button" href="<?php echo esc_url( admin_url( 'post-new.php?post_type=product' ) ); ?>"><?php esc_html_e( 'Thêm sản phẩm', 'apollo' ); ?></a>
+			<a class="button" href="<?php echo esc_url( admin_url( 'edit.php?post_type=product' ) ); ?>"><?php esc_html_e( 'Quản lý sản phẩm', 'apollo' ); ?></a>
+			<a class="button" href="<?php echo esc_url( admin_url( 'edit-tags.php?taxonomy=product_cat&post_type=product' ) ); ?>"><?php esc_html_e( 'Danh mục', 'apollo' ); ?></a>
+			<a class="button" href="<?php echo esc_url( admin_url( 'upload.php' ) ); ?>"><?php esc_html_e( 'Thư viện ảnh', 'apollo' ); ?></a>
+			<?php if ( current_user_can( 'manage_woocommerce' ) ) : ?>
+				<a class="button" href="<?php echo esc_url( admin_url( 'edit.php?post_type=shop_order' ) ); ?>"><?php esc_html_e( 'Đơn hàng', 'apollo' ); ?></a>
+			<?php endif; ?>
+			<a class="button" href="<?php echo esc_url( admin_url( 'users.php' ) ); ?>"><?php esc_html_e( 'Người dùng & phân quyền', 'apollo' ); ?></a>
+		</div>
+	</div>
+	<style>
+		.apollo-admin-overview__stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 16px 0; }
+		.apollo-admin-overview__stats div { padding: 14px; background: #f6f5f2; border: 1px solid #e3e0d8; }
+		.apollo-admin-overview__stats strong, .apollo-admin-overview__stats span { display: block; }
+		.apollo-admin-overview__stats strong { font-size: 22px; color: #101010; }
+		.apollo-admin-overview__stats span { margin-top: 3px; color: #68645d; }
+		.apollo-admin-overview__links { display: flex; flex-wrap: wrap; gap: 8px; }
+		@media (max-width: 782px) { .apollo-admin-overview__stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+	</style>
+	<?php
+}
+
 function apollo_enqueue_assets() {
 	wp_dequeue_style( 'techpro-style' );
 	wp_dequeue_style( 'google-fonts' );
 	wp_dequeue_script( 'techpro-main' );
 
-	// Optimized Google Fonts loading: Inter (400, 500, 600), Montserrat (600, 700, 800), Oswald (600, 700) with Vietnamese subset
+	// Load the lighter Montserrat weights used by the showroom typography.
 	wp_enqueue_style(
 		'apollo-google-fonts',
-		'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@600;700;800&family=Oswald:wght@600;700&display=swap&subset=vietnamese',
+		'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@400;500;600;700;800&family=Oswald:wght@600;700&display=swap&subset=vietnamese',
 		array(),
 		null
 	);
@@ -169,6 +272,24 @@ function apollo_hide_legacy_techpro_products( $meta_query ) {
 	return $meta_query;
 }
 add_filter( 'woocommerce_product_query_meta_query', 'apollo_hide_legacy_techpro_products' );
+
+function apollo_remove_empty_product_filter_args( $wp ) {
+	if (
+		is_admin()
+		|| ! isset( $_GET['post_type'] )
+		|| ! is_string( $_GET['post_type'] )
+		|| 'product' !== sanitize_key( wp_unslash( $_GET['post_type'] ) )
+	) {
+		return;
+	}
+
+	foreach ( array( 'min_price', 'max_price' ) as $filter_key ) {
+		if ( isset( $_GET[ $filter_key ] ) && is_string( $_GET[ $filter_key ] ) && '' === trim( wp_unslash( $_GET[ $filter_key ] ) ) ) {
+			unset( $_GET[ $filter_key ] );
+		}
+	}
+}
+add_action( 'parse_request', 'apollo_remove_empty_product_filter_args' );
 
 function apollo_hide_legacy_products_from_rest_queries( $query ) {
 	if ( ! defined( 'REST_REQUEST' ) || ! REST_REQUEST || ! in_array( 'product', (array) $query->get( 'post_type' ), true ) ) {

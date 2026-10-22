@@ -6,6 +6,12 @@
  */
 
 defined( 'ABSPATH' ) || exit;
+
+if ( is_shop() || is_product_taxonomy() ) {
+	require get_stylesheet_directory() . '/archive-product.php';
+	return;
+}
+
 get_header();
 ?>
 <main id="primary" class="apollo-catalog apollo-shell">

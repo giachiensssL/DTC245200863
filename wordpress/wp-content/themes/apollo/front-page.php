@@ -51,90 +51,48 @@ $apollo_categories = function_exists( 'apollo_get_visible_product_categories' )
 <main id="primary">
 
 <!-- ═══════════════════════════════════════════════════════ 1. HERO ═══ -->
-<section class="apollo-hero">
+<section class="apollo-hero apollo-home-hero">
 	<div class="apollo-hero__image" style="background-image:url('<?php echo esc_url( $hero_image ); ?>');" role="img" aria-label="<?php esc_attr_e( 'Apollo Automobil Showroom', 'apollo' ); ?>"></div>
 	<div class="apollo-hero__backdrop" aria-hidden="true"></div>
 
 	<div class="apollo-shell apollo-hero__shell">
 		<div class="apollo-hero__content">
-			<!-- Pill Badge (like reference: HỆ THỐNG QUẢN LÝ SỰ KIỆN...) -->
 			<div class="apollo-hero__badge">
 				<span class="apollo-hero__badge-dot"></span>
-				<span><?php esc_html_e( 'SHOWROOM & BỘ SƯU TẬP SIÊU XE CAO CẤP', 'apollo' ); ?></span>
+				<span><?php esc_html_e( 'SHOWROOM · BỘ SƯU TẬP', 'apollo' ); ?></span>
 			</div>
 
-			<!-- Main Title (like reference: Kiến tạo những sự kiện đẳng cấp) -->
 			<h1 class="apollo-hero__title">
-				<?php esc_html_e( 'Kiến tạo những', 'apollo' ); ?>
-				<span class="apollo-hero__title-accent"><?php esc_html_e( 'tuyệt tác tốc độ', 'apollo' ); ?></span>
+				<?php esc_html_e( 'APOLLO', 'apollo' ); ?>
+				<span class="apollo-hero__title-accent"><?php esc_html_e( 'AUTOMOBIL', 'apollo' ); ?></span>
 			</h1>
 
-			<!-- Description (like reference) -->
 			<p class="apollo-hero__desc">
-				<?php esc_html_e( 'Khám phá thế giới siêu xe nơi thiết kế táo bạo gặp gỡ hiệu suất đỉnh cao. Trải nghiệm không gian showroom đẳng cấp và gian hàng phụ kiện chính hãng.', 'apollo' ); ?>
+				<?php esc_html_e( 'Khám phá không gian trưng bày và bộ sưu tập lấy cảm hứng từ thế giới siêu xe. Thông tin từng mẫu xe sẽ được cập nhật khi có dữ liệu xác thực.', 'apollo' ); ?>
 			</p>
 
-			<!-- Search Bar / Action Bar (like reference search input + button) -->
-			<form class="apollo-hero__search-bar" role="search" method="get" action="<?php echo esc_url( home_url( '/' ) ); ?>">
-				<div class="apollo-hero__search-input-wrap">
-					<svg class="apollo-hero__search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-						<circle cx="11" cy="11" r="8"></circle>
-						<line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-					</svg>
-					<input
-						type="search"
-						name="s"
-						class="apollo-hero__search-input"
-						placeholder="<?php esc_attr_e( 'Tìm kiếm siêu xe, mô hình, phụ kiện...', 'apollo' ); ?>"
-						value="<?php echo esc_attr( get_search_query() ); ?>"
-					/>
-					<input type="hidden" name="post_type" value="product" />
-				</div>
-				<button type="submit" class="apollo-button apollo-button--primary apollo-hero__search-btn">
-					<?php esc_html_e( 'TÌM KIẾM', 'apollo' ); ?>
-				</button>
-			</form>
+			<a class="apollo-button apollo-home-hero__cta" href="<?php echo esc_url( get_post_type_archive_link( 'apollo_vehicle' ) ); ?>">
+				<?php esc_html_e( 'KHÁM PHÁ BỘ SƯU TẬP', 'apollo' ); ?>
+				<span aria-hidden="true">→</span>
+			</a>
 
-			<!-- Quick Actions / Navigation Links -->
-			<div class="apollo-hero__quick-actions">
-				<a class="apollo-hero__quick-link" href="<?php echo esc_url( get_post_type_archive_link( 'apollo_vehicle' ) ); ?>">
-					<span>→</span> <?php esc_html_e( 'Khám phá bộ sưu tập', 'apollo' ); ?>
-				</a>
-				<span class="apollo-hero__quick-sep">·</span>
-				<a class="apollo-hero__quick-link" href="<?php echo esc_url( home_url( '/ve-chung-toi/' ) ); ?>">
-					<span>→</span> <?php esc_html_e( 'Về Apollo Automobil', 'apollo' ); ?>
-				</a>
-			</div>
-
-			<!-- Showroom Stats Bar (like reference: 1,200+ SỰ KIỆN TỔ CHỨC / 100K+ / 96%) -->
-			<div class="apollo-hero__stats">
+			<div class="apollo-hero__stats" aria-label="<?php esc_attr_e( 'Khám phá các khu vực Apollo', 'apollo' ); ?>">
 				<div class="apollo-hero__stat-item">
-					<div class="apollo-hero__stat-icon">
-						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.5 2.8C2.1 10.9 2 11.2 2 11.5V16c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>
-					</div>
 					<div class="apollo-hero__stat-body">
-						<span class="apollo-hero__stat-number">05+</span>
-						<span class="apollo-hero__stat-label"><?php esc_html_e( 'SIÊU XE TRƯNG BÀY', 'apollo' ); ?></span>
+						<span class="apollo-hero__stat-number"><?php esc_html_e( 'SHOWROOM', 'apollo' ); ?></span>
+						<span class="apollo-hero__stat-label"><?php esc_html_e( 'KHÔNG GIAN TRƯNG BÀY', 'apollo' ); ?></span>
 					</div>
 				</div>
-
 				<div class="apollo-hero__stat-item">
-					<div class="apollo-hero__stat-icon">
-						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-					</div>
 					<div class="apollo-hero__stat-body">
-						<span class="apollo-hero__stat-number">100%</span>
-						<span class="apollo-hero__stat-label"><?php esc_html_e( 'TIÊU CHUẨN QUỐC TẾ', 'apollo' ); ?></span>
+						<span class="apollo-hero__stat-number"><?php esc_html_e( 'BỘ SƯU TẬP', 'apollo' ); ?></span>
+						<span class="apollo-hero__stat-label"><?php esc_html_e( 'CÁC MẪU XE APOLLO', 'apollo' ); ?></span>
 					</div>
 				</div>
-
 				<div class="apollo-hero__stat-item">
-					<div class="apollo-hero__stat-icon">
-						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-					</div>
 					<div class="apollo-hero__stat-body">
-						<span class="apollo-hero__stat-number">98%</span>
-						<span class="apollo-hero__stat-label"><?php esc_html_e( 'KHÁCH HÀNG HÀI LÒNG', 'apollo' ); ?></span>
+						<span class="apollo-hero__stat-number"><?php esc_html_e( 'GIAN HÀNG', 'apollo' ); ?></span>
+						<span class="apollo-hero__stat-label"><?php esc_html_e( 'MÔ HÌNH & PHỤ KIỆN', 'apollo' ); ?></span>
 					</div>
 				</div>
 			</div>
@@ -154,8 +112,8 @@ $apollo_categories = function_exists( 'apollo_get_visible_product_categories' )
 		</div>
 		<div class="apollo-editorial__copy">
 			<span class="apollo-eyebrow"><?php esc_html_e( 'Thiết kế · Kỹ thuật · Trải nghiệm', 'apollo' ); ?></span>
-			<h2><?php esc_html_e( 'KỸ THUẬT TẠO NÊN KIỆT TÁC', 'apollo' ); ?></h2>
-			<p><?php esc_html_e( 'Tại Apollo Automobil, chúng tôi kết hợp thẩm mỹ tinh xảo, công nghệ tiên tiến và trải nghiệm lái đỉnh cao để mang đến những tuyệt tác tốc độ. Mỗi đường cong, mỗi chi tiết đều có câu chuyện riêng.', 'apollo' ); ?></p>
+			<h2><?php esc_html_e( 'CẢM HỨNG TỪ THẾ GIỚI SIÊU XE', 'apollo' ); ?></h2>
+			<p><?php esc_html_e( 'Khám phá những đường nét thiết kế, câu chuyện kỹ thuật và tinh thần tốc độ qua bộ sưu tập Apollo. Nội dung về từng mẫu xe sẽ được cập nhật khi có thông tin xác thực.', 'apollo' ); ?></p>
 			<a class="apollo-button" href="<?php echo esc_url( home_url( '/lien-he/' ) ); ?>">
 				<?php esc_html_e( 'KHÁM PHÁ THÊM', 'apollo' ); ?>
 			</a>
@@ -273,7 +231,7 @@ $apollo_categories = function_exists( 'apollo_get_visible_product_categories' )
 </section>
 
 <!-- ═══════════════════════════ 4. KHÁM PHÁ GIAN HÀNG ══════════════ -->
-<section class="apollo-section">
+<section class="apollo-section apollo-section--dark">
 	<div class="apollo-shell">
 		<div class="apollo-section__heading">
 			<div>
@@ -415,8 +373,8 @@ $apollo_categories = function_exists( 'apollo_get_visible_product_categories' )
 					</svg>
 				</div>
 				<div class="apollo-why-item__text">
-					<strong><?php esc_html_e( 'Sản phẩm tuyển chọn', 'apollo' ); ?></strong>
-					<span><?php esc_html_e( 'Chất lượng cao, độc đáo và xác thực.', 'apollo' ); ?></span>
+					<strong><?php esc_html_e( 'Thông tin minh bạch', 'apollo' ); ?></strong>
+					<span><?php esc_html_e( 'Nội dung được cập nhật theo dữ liệu xác thực.', 'apollo' ); ?></span>
 				</div>
 			</div>
 			<div class="apollo-why-item">
@@ -429,8 +387,8 @@ $apollo_categories = function_exists( 'apollo_get_visible_product_categories' )
 					</svg>
 				</div>
 				<div class="apollo-why-item__text">
-					<strong><?php esc_html_e( 'Thông tin rõ ràng', 'apollo' ); ?></strong>
-					<span><?php esc_html_e( 'Chi tiết sản phẩm minh bạch và đầy đủ.', 'apollo' ); ?></span>
+					<strong><?php esc_html_e( 'Bộ sưu tập Apollo', 'apollo' ); ?></strong>
+					<span><?php esc_html_e( 'Khám phá các mẫu xe và hình ảnh trưng bày.', 'apollo' ); ?></span>
 				</div>
 			</div>
 			<div class="apollo-why-item">
@@ -441,8 +399,8 @@ $apollo_categories = function_exists( 'apollo_get_visible_product_categories' )
 					</svg>
 				</div>
 				<div class="apollo-why-item__text">
-					<strong><?php esc_html_e( 'Mua sắm thuận tiện', 'apollo' ); ?></strong>
-					<span><?php esc_html_e( 'Giỏ hàng và đặt hàng trực tuyến dễ dàng.', 'apollo' ); ?></span>
+					<strong><?php esc_html_e( 'Gian hàng trực tuyến', 'apollo' ); ?></strong>
+					<span><?php esc_html_e( 'Mô hình, phụ kiện và sản phẩm sưu tầm.', 'apollo' ); ?></span>
 				</div>
 			</div>
 			<div class="apollo-why-item">

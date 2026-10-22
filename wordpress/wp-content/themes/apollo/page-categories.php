@@ -23,11 +23,29 @@ $categories = apollo_get_visible_product_categories();
 					<?php foreach ( $categories as $category ) : ?>
 						<?php $category_url = get_term_link( $category ); ?>
 						<?php if ( is_wp_error( $category_url ) ) { continue; } ?>
+						<?php
+						$category_image_id = absint( get_term_meta( $category->term_id, 'thumbnail_id', true ) );
+						$category_image    = $category_image_id ? wp_get_attachment_image_url( $category_image_id, 'large' ) : '';
+						if ( ! $category_image ) {
+							$category_name = strtolower( $category->name );
+							$fallback      = 'a1.webp';
+							if ( false !== strpos( $category_name, 'mô hình' ) ) {
+								$fallback = 'a12.webp';
+							} elseif ( false !== strpos( $category_name, 'phụ kiện' ) ) {
+								$fallback = 'a9.webp';
+							} elseif ( false !== strpos( $category_name, 'thời trang' ) ) {
+								$fallback = 'ao1.webp';
+							}
+							$category_image = get_stylesheet_directory_uri() . '/assets/images/' . $fallback;
+						}
+						?>
 						<a class="apollo-category-card" href="<?php echo esc_url( $category_url ); ?>">
+							<img class="apollo-category-card__image" src="<?php echo esc_url( $category_image ); ?>" alt="<?php echo esc_attr( $category->name ); ?>" loading="lazy">
+							<span class="apollo-category-card__overlay" aria-hidden="true"></span>
 							<div class="apollo-card__body">
 								<span class="apollo-card__eyebrow"><?php esc_html_e( 'Danh mục Apollo', 'apollo' ); ?></span>
 								<h2><?php echo esc_html( $category->name ); ?></h2>
-								<span><?php esc_html_e( 'Khám phá sản phẩm', 'apollo' ); ?> →</span>
+								<span class="apollo-category-card__cta"><?php esc_html_e( 'Khám phá sản phẩm', 'apollo' ); ?> →</span>
 							</div>
 						</a>
 					<?php endforeach; ?>
