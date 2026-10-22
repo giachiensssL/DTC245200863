@@ -58,6 +58,7 @@ services:
       - ./nginx/logs:/var/log/nginx
       - wordpress_data:/var/www/html:ro
       - ./wordpress/wp-content/themes/techpro:/var/www/html/wp-content/themes/techpro:ro
+      - ./wordpress/wp-content/themes/apollo:/var/www/html/wp-content/themes/apollo:ro
     networks:
       - frontend_net
       - app_net
@@ -125,6 +126,9 @@ services:
     volumes:
       - wordpress_data:/var/www/html
       - ./wordpress/wp-content/themes/techpro:/var/www/html/wp-content/themes/techpro:ro
+      - ./wordpress/wp-content/themes/apollo:/var/www/html/wp-content/themes/apollo:ro
+      - ./scripts/install-woocommerce.php:/tmp/install-woocommerce.php:ro
+      - ./scripts/activate-apollo.php:/tmp/activate-apollo.php:ro
     networks:
       - app_net
       - db_net

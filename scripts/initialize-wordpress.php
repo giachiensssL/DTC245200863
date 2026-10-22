@@ -1,6 +1,6 @@
 <?php
 /**
- * Idempotently initializes the local TechPro demo site.
+ * Initializes the local TechPro demo site before WooCommerce/Apollo setup.
  *
  * Run inside the WordPress container:
  * docker compose exec -T wordpress php < scripts/initialize-wordpress.php
@@ -10,6 +10,11 @@ require '/var/www/html/wp-load.php';
 
 if ( ! is_blog_installed() ) {
     fwrite( STDERR, "WordPress is not installed; finish the initial installation first.\n" );
+    exit( 1 );
+}
+
+if ( 'apollo' === get_option( 'stylesheet' ) || class_exists( 'WooCommerce' ) ) {
+    fwrite( STDERR, "This TechPro demo initializer must run before WooCommerce is installed and Apollo is activated; it would overwrite site settings.\n" );
     exit( 1 );
 }
 

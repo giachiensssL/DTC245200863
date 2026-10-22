@@ -1,9 +1,9 @@
-# TechPro — Website Giới Thiệu Sản Phẩm Công Nghệ
+# Apollo Automobil — Showroom & Gian Hàng Sưu Tầm
 
-> **Môn học:** Triển Khai và Quản Trị Hệ Thống Phần Mềm  
-> **Đề tài 3:** Website Quảng Bá Sản Phẩm Sử Dụng WordPress  
+> **Môn học:** Triển Khai và Quản Trị Hệ Thống Phần Mềm
+> **Đề tài 3:** Website quảng bá sản phẩm sử dụng WordPress
 > **MSSV:** DTC245200863  
-> **Trường:** [Tên trường đại học]  
+> **Nền tảng:** WordPress, child theme Apollo, WooCommerce
 
 ---
 
@@ -30,12 +30,12 @@
 
 ## 1. Tổng quan dự án
 
-**TechPro** là website quảng bá sản phẩm công nghệ (thương hiệu học thuật), được xây dựng bằng WordPress và triển khai hoàn toàn bằng Docker. Dự án thỏa mãn 9 yêu cầu kỹ thuật của môn học:
+**Apollo Automobil** là giao diện showroom và gian hàng mô hình/sản phẩm sưu tầm, triển khai trên nền WordPress hiện có bằng child theme và WooCommerce. Theme nền TechPro cùng dữ liệu sản phẩm cũ được giữ lại; sản phẩm TechPro không hiển thị trong gian hàng Apollo. Dự án thỏa mãn 9 yêu cầu kỹ thuật của môn học:
 
 | # | Yêu cầu | Công nghệ |
 |---|---|---|
 | 1 | Quản lý mã nguồn | Git + GitHub |
-| 2 | Website WordPress | WordPress 7.1 + Custom Theme |
+| 2 | Website WordPress | WordPress + Apollo child theme |
 | 3 | Cơ sở dữ liệu | MySQL 8.0 + phpMyAdmin |
 | 4 | Reverse Proxy | Nginx + HTTPS (self-signed) |
 | 5 | Giám sát metrics | Prometheus + Exporters |
@@ -44,6 +44,8 @@
 | 8 | Bảo mật | Network isolation, security headers, least-privilege |
 | 9 | Docker Compose | 12 services, 4 networks, 5 volumes |
 
+> WooCommerce được cài từ gói chính thức WordPress.org bằng script trong `scripts/`. Thanh toán và vận chuyển chưa cấu hình; chỉ bật giao dịch sau khi quản trị viên thiết lập và kiểm tra các chính sách thực tế.
+
 ---
 
 ## 2. Công nghệ sử dụng
@@ -51,6 +53,8 @@
 | Thành phần | Image/Phiên bản | Mục đích |
 |---|---|---|
 | **WordPress** | wordpress:7.1.3-php8.3-fpm-alpine | CMS chính |
+| **WooCommerce** | 11.2.1 | Catalog sản phẩm, giỏ hàng và checkout (chưa bật thanh toán) |
+| **Apollo theme** | Child theme của TechPro | Showroom, responsive UI và tích hợp WooCommerce |
 | **MySQL** | mysql:8.0.46 | Cơ sở dữ liệu |
 | **phpMyAdmin** | phpmyadmin:5.2.1-apache | Quản trị database |
 | **Nginx** | nginx:1.25-alpine | Reverse proxy + HTTPS |
@@ -353,26 +357,35 @@ Các image đang dùng đều cung cấp manifest `linux/amd64` và `linux/arm64
 ### Lần đầu setup
 
 1. Mở địa chỉ trong `WORDPRESS_SITE_URL` (mặc định `http://localhost`)
-3. Chọn ngôn ngữ: **Tiếng Việt**
-4. Nhập thông tin site:
-   - **Tên site:** TechPro — Thiết Bị Công Nghệ
-   - **Tên đăng nhập:** `admin`
-   - **Mật khẩu:** (mạnh)
-   - **Email:** `admin@techpro.vn`
-5. Nhấn **Cài đặt WordPress**
+2. Chọn ngôn ngữ: **Tiếng Việt**
+3. Nhập thông tin site và tài khoản quản trị theo môi trường của bạn.
+4. Nhấn **Cài đặt WordPress**.
 
-### Kích hoạt theme TechPro
-
-Sau khi hoàn tất cài đặt WordPress lần đầu, có thể khởi tạo theme, các trang, menu và 8 sản phẩm demo tự động bằng PowerShell:
+Sau khi hoàn tất cài đặt WordPress lần đầu, hãy chạy bộ khởi tạo TechPro một lần trước khi cài WooCommerce hoặc kích hoạt Apollo:
 
 ```powershell
 docker cp .\scripts\initialize-wordpress.php techpro_wordpress:/tmp/initialize-wordpress.php
 docker compose exec -T wordpress php /tmp/initialize-wordpress.php
 ```
 
-Script có thể chạy lại an toàn: cập nhật các nội dung demo theo slug, tạo lại menu TechPro và chỉ xóa bài viết mặc định có slug `chao-moi-nguoi`. Ảnh sản phẩm là SVG nội bộ trong `wordpress/wp-content/themes/techpro/assets/products`.
+Script chỉ dùng cho bước khởi tạo TechPro ban đầu. Nó từ chối chạy khi WooCommerce đã cài hoặc Apollo đang kích hoạt để tránh ghi đè cấu hình website. Ảnh sản phẩm demo là SVG nội bộ trong `wordpress/wp-content/themes/techpro/assets/products`.
 
-Theme tự đăng ký Custom Post Type `product` và taxonomy `product_cat`; script tạo trang tĩnh, gán đúng page template, đặt Trang chủ làm front page và gắn menu vào vị trí điều hướng chính.
+### Cài WooCommerce và kích hoạt giao diện Apollo
+
+Apollo dùng child theme của TechPro để giữ nguyên theme nền và dữ liệu hiện tại. Cài WooCommerce bản 11.2.1 cùng gói ngôn ngữ tiếng Việt từ máy chủ chính thức của WordPress.org, cấu hình các trang cửa hàng/giỏ hàng bằng tiếng Việt, đặt đơn vị tiền tệ VND, sau đó kích hoạt giao diện:
+
+```powershell
+docker compose up -d --force-recreate wordpress nginx
+docker compose exec -T wordpress php /tmp/install-woocommerce.php
+docker compose exec -T wordpress php /tmp/activate-apollo.php
+docker compose exec -T wordpress php -r 'require "/var/www/html/wp-load.php"; flush_rewrite_rules(false);'
+```
+
+Các cổng thanh toán chưa được cấu hình; không thực hiện đơn hàng thật. Phí vận chuyển, thuế và thông tin người bán cần được thiết lập trước khi dùng WooCommerce cho giao dịch thực tế.
+
+Sản phẩm TechPro cũ được giữ nguyên trong cơ sở dữ liệu nhưng không xuất hiện trong gian hàng Apollo. Khu vực “Xe Apollo” là nội dung showroom/đăng ký tư vấn; chỉ quản trị viên mới bổ sung mẫu xe và thông tin đã xác minh. Gian hàng mô hình Apollo dùng mục **Sản phẩm** của WooCommerce và hiện không tự tạo sản phẩm, giá hoặc ảnh giả.
+
+Ảnh minh họa SVG trong child theme là đồ họa khái niệm nguyên bản, không đại diện cho mẫu xe cụ thể. Có thể thay ảnh hero tại **Giao diện → Tùy biến → Apollo Automobil — Trang chủ** bằng tài nguyên có quyền sử dụng. Nội dung thương hiệu, thông số và catalog thực tế cần được cung cấp trước khi công bố.
 
 ---
 
@@ -481,7 +494,7 @@ X-Content-Type-Options: nosniff
 X-XSS-Protection: 1; mode=block
 Referrer-Policy: strict-origin-when-cross-origin
 Permissions-Policy: geolocation=(), microphone=(), camera=()
-Content-Security-Policy: default-src 'self' https: data: 'unsafe-inline' 'unsafe-eval';
+Content-Security-Policy: default-src 'self' https: data: 'unsafe-inline' 'unsafe-eval'; worker-src 'self' blob:;
 ```
 
 ### Kiểm tra headers
