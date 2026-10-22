@@ -1,3 +1,4 @@
+# Nội dung tệp grafana/provisioning/datasources/datasources.yml
 apiVersion: 1
 
 datasources:

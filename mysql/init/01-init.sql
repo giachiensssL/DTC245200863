@@ -11,9 +11,4 @@ GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, INDEX, ALTER,
   ON `wordpress_db`.*
   TO 'wordpress_user'@'%';
 
--- Monitoring user (read-only)
-CREATE USER IF NOT EXISTS 'exporter'@'%' IDENTIFIED BY 'TechPro@Exporter#2024';
-GRANT PROCESS, REPLICATION CLIENT, SELECT ON *.* TO 'exporter'@'%';
-GRANT SELECT ON performance_schema.* TO 'exporter'@'%';
-
 FLUSH PRIVILEGES;

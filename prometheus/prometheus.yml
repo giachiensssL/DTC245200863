@@ -1,10 +1,10 @@
 # =============================================================================
 # prometheus/prometheus.yml — Prometheus Scrape Configuration
 # =============================================================================
-
+# Nội dung tệp cấu hình prometheus/prometheus.yml
 global:
-  scrape_interval: 15s
-  evaluation_interval: 15s
+  scrape_interval: 15s # Chu kỳ kéo dữ liệu mặc định là 15 giây
+  evaluation_interval: 15s # Chu kỳ đánh giá các quy tắc cảnh báo (alert rules).
   external_labels:
     environment: 'techpro-wordpress'
     student_id: 'DTC245200863'
@@ -12,14 +12,14 @@ global:
 rule_files: []
 
 scrape_configs:
-
+  # 1. Tự giám sát sức khỏe của chính máy chủ Prometheus
   # Prometheus self-monitoring
   - job_name: 'prometheus'
     static_configs:
       - targets: ['localhost:9090']
         labels:
           service: 'prometheus'
-
+  # 2. Thu thập chỉ số tài nguyên của toàn bộ Docker Containers qua cAdvisor
   # cAdvisor — Container metrics
   - job_name: 'cadvisor'
     scrape_interval: 30s
