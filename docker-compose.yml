@@ -3,8 +3,6 @@
 # Student ID: DTC245200863 | Subject: Software System Deployment & Admin
 # =============================================================================
 
-version: '3.8'
-
 # ===========================================================================
 # NETWORKS — Isolation between service tiers
 # ===========================================================================
@@ -51,9 +49,9 @@ services:
     container_name: techpro_nginx
     restart: unless-stopped
     ports:
-      - "80:80"
-      - "443:443"
-      - "8080:8080"
+      - "${WEB_BIND_ADDRESS:-127.0.0.1}:${HTTP_PORT:-80}:80"
+      - "${WEB_BIND_ADDRESS:-127.0.0.1}:${HTTPS_PORT:-443}:443"
+      - "127.0.0.1:${PHPMYADMIN_PORT:-8080}:8080"
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
       - ./nginx/certs:/etc/nginx/certs:ro
@@ -68,7 +66,7 @@ services:
       wordpress:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost/health"]
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -80,7 +78,7 @@ services:
   # MYSQL — Database
   # ---------------------------------------------------------------------------
   mysql:
-    image: mysql:8.0.36
+    image: mysql:8.0.46
     container_name: techpro_mysql
     restart: unless-stopped
     environment:
@@ -88,6 +86,8 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_EXPORTER_USER: ${MYSQL_EXPORTER_USER}
+      MYSQL_EXPORTER_PASSWORD: ${MYSQL_EXPORTER_PASSWORD}
     volumes:
       - mysql_data:/var/lib/mysql
       - ./mysql/init:/docker-entrypoint-initdb.d:ro
@@ -106,7 +106,7 @@ services:
   # WORDPRESS — Application (PHP-FPM + Alpine)
   # ---------------------------------------------------------------------------
   wordpress:
-    image: wordpress:6.4.3-php8.1-fpm-alpine
+    image: wordpress:7.1.3-php8.3-fpm-alpine
     container_name: techpro_wordpress
     restart: unless-stopped
     environment:
@@ -120,8 +120,8 @@ services:
         if (isset($$_SERVER['HTTP_X_FORWARDED_PROTO']) && $$_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
           $$_SERVER['HTTPS'] = 'on';
         }
-        define('WP_HOME', 'https://localhost');
-        define('WP_SITEURL', 'https://localhost');
+        define('WP_HOME', '${WORDPRESS_SITE_URL:-http://localhost}');
+        define('WP_SITEURL', '${WORDPRESS_SITE_URL:-http://localhost}');
     volumes:
       - wordpress_data:/var/www/html
       - ./wordpress/wp-content/themes/techpro:/var/www/html/wp-content/themes/techpro:ro
@@ -165,7 +165,7 @@ services:
   # PROMETHEUS — Metrics Collection
   # ---------------------------------------------------------------------------
   prometheus:
-    image: prom/prometheus:v2.50.1
+    image: prom/prometheus:v3.15.1
     container_name: techpro_prometheus
     restart: unless-stopped
     command:
@@ -181,7 +181,7 @@ services:
     networks:
       - monitoring_net
     ports:
-      - "127.0.0.1:9090:9090"
+      - "127.0.0.1:${PROMETHEUS_PORT:-9090}:9090"
     user: "65534:65534"
     security_opt:
       - no-new-privileges:true
@@ -190,14 +190,14 @@ services:
   # GRAFANA — Dashboards & Visualization
   # ---------------------------------------------------------------------------
   grafana:
-    image: grafana/grafana:10.3.3
+    image: grafana/grafana:13.2.4
     container_name: techpro_grafana
     restart: unless-stopped
     environment:
       GF_SECURITY_ADMIN_USER: ${GF_SECURITY_ADMIN_USER}
       GF_SECURITY_ADMIN_PASSWORD: ${GF_SECURITY_ADMIN_PASSWORD}
       GF_USERS_ALLOW_SIGN_UP: "false"
-      GF_SERVER_ROOT_URL: ${GF_SERVER_ROOT_URL:-http://localhost:3000}
+      GF_SERVER_ROOT_URL: ${GF_SERVER_ROOT_URL:-http://localhost:${GRAFANA_PORT:-3000}}
       GF_PATHS_PROVISIONING: /etc/grafana/provisioning
     volumes:
       - grafana_data:/var/lib/grafana
@@ -206,7 +206,7 @@ services:
     networks:
       - monitoring_net
     ports:
-      - "127.0.0.1:3000:3000"
+      - "127.0.0.1:${GRAFANA_PORT:-3000}:3000"
     depends_on:
       - prometheus
       - loki
@@ -251,7 +251,7 @@ services:
       - '--collector.netdev'
       - '--collector.loadavg'
     volumes:
-      - /:/host:ro,rslave
+      - /:/host:ro
     networks:
       - monitoring_net
     pid: host
@@ -262,11 +262,11 @@ services:
   # NGINX EXPORTER — Nginx Metrics
   # ---------------------------------------------------------------------------
   nginx_exporter:
-    image: nginx/nginx-prometheus-exporter:1.1.0
+    image: nginx/nginx-prometheus-exporter:1.5.0
     container_name: techpro_nginx_exporter
     restart: unless-stopped
     command:
-      - '-nginx.scrape-uri=http://nginx:8081/stub_status'
+      - '--nginx.scrape-uri=http://nginx:8081/stub_status'
     networks:
       - monitoring_net
       - frontend_net
@@ -283,10 +283,13 @@ services:
     container_name: techpro_mysql_exporter
     restart: unless-stopped
     environment:
-      DATA_SOURCE_NAME: "${MYSQL_EXPORTER_USER}:${MYSQL_EXPORTER_PASSWORD}@(mysql:3306)/"
+      MYSQLD_EXPORTER_PASSWORD: ${MYSQL_EXPORTER_PASSWORD}
     networks:
       - monitoring_net
       - db_net
+    command:
+      - '--mysqld.username=${MYSQL_EXPORTER_USER}'
+      - '--mysqld.address=mysql:3306'
     depends_on:
       mysql:
         condition: service_healthy
@@ -307,7 +310,7 @@ services:
     networks:
       - monitoring_net
     ports:
-      - "127.0.0.1:3100:3100"
+      - "127.0.0.1:${LOKI_PORT:-3100}:3100"
     user: "10001:10001"
     security_opt:
       - no-new-privileges:true
@@ -323,8 +326,6 @@ services:
     volumes:
       - ./promtail/promtail-config.yml:/etc/promtail/promtail-config.yml:ro
       - ./nginx/logs:/var/log/nginx:ro
-      - /var/lib/docker/containers:/var/lib/docker/containers:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
       - monitoring_net
     depends_on:

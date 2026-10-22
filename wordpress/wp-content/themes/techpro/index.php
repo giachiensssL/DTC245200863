@@ -1,5 +1,6 @@
 <?php
 /**
+ * Template Name: Trang chủ TechPro
  * TechPro Homepage Template
  * Trang chủ với dữ liệu động từ WordPress
  *
@@ -8,6 +9,13 @@
 get_header();
 
 // Query featured products
+$published_products = wp_count_posts( 'product' )->publish ?? 0;
+$published_categories = wp_count_terms( [
+    'taxonomy'   => 'product_cat',
+    'hide_empty' => true,
+] );
+$published_categories = is_wp_error( $published_categories ) ? 0 : (int) $published_categories;
+
 $featured_products = new WP_Query( [
     'post_type'      => 'product',
     'posts_per_page' => 6,
@@ -63,12 +71,12 @@ $faqs = new WP_Query( [
             </div>
             <div class="hero-stats">
                 <div class="hero-stat">
-                    <div class="number">500+</div>
+                    <div class="number"><?php echo esc_html(number_format_i18n((int) $published_products)); ?></div>
                     <div class="label">Sản phẩm</div>
                 </div>
                 <div class="hero-stat">
-                    <div class="number">50K+</div>
-                    <div class="label">Khách hàng</div>
+                    <div class="number"><?php echo esc_html(number_format_i18n($published_categories)); ?></div>
+                    <div class="label">Danh mục</div>
                 </div>
                 <div class="hero-stat">
                     <div class="number">10 năm</div>

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 480" role="img" aria-labelledby="title">
+<title id="title">Màn hình đồ họa TechPro Studio Display</title>
+<defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#f5efff"/><stop offset="1" stop-color="#c4d9ff"/></linearGradient><linearGradient id="screen" x2="1" y2="1"><stop stop-color="#ff8c74"/><stop offset=".5" stop-color="#735be7"/><stop offset="1" stop-color="#13b9bb"/></linearGradient></defs>
+<rect width="640" height="480" rx="28" fill="url(#bg)"/><rect x="107" y="70" width="426" height="255" rx="18" fill="#20283a"/><rect x="121" y="84" width="398" height="227" rx="8" fill="url(#screen)"/>
+<circle cx="338" cy="189" r="82" fill="#fff" opacity=".2"/><path d="M121 277q96-144 197-39 102-171 201-51v124H121z" fill="#121b3a" opacity=".47"/>
+<path d="M300 325h40v62h-40z" fill="#596b88"/><path d="M246 392q74-27 148 0l27 17H219z" fill="#7586a0"/><circle cx="320" cy="325" r="3" fill="#a8bdd4"/>
+<text x="320" y="451" fill="#314768" font-family="Arial,sans-serif" font-size="22" text-anchor="middle" letter-spacing="4">STUDIO DISPLAY</text>
+</svg>

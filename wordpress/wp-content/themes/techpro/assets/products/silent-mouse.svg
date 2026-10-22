@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 480" role="img" aria-labelledby="title">
+<title id="title">Chuột không dây TechPro Silent Mouse</title>
+<defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#eaf9f7"/><stop offset="1" stop-color="#cce5ff"/></linearGradient><linearGradient id="mouse" x2="1" y2="1"><stop stop-color="#425473"/><stop offset="1" stop-color="#17243d"/></linearGradient></defs>
+<rect width="640" height="480" rx="28" fill="url(#bg)"/><ellipse cx="320" cy="368" rx="132" ry="24" fill="#41688d" opacity=".2"/>
+<path d="M320 87c-82 0-133 64-133 163v27c0 82 51 128 133 128s133-46 133-128v-27c0-99-51-163-133-163" fill="url(#mouse)" stroke="#d7e8f4" stroke-width="8"/>
+<path d="M320 91v117" stroke="#b6cee4" stroke-width="5"/><rect x="301" y="130" width="38" height="57" rx="18" fill="#92a6bd"/><path d="M198 247h244" stroke="#00d4aa" stroke-width="4" opacity=".75"/>
+<circle cx="320" cy="247" r="4" fill="#f6ffff"/><text x="320" y="446" fill="#284866" font-family="Arial,sans-serif" font-size="22" text-anchor="middle" letter-spacing="4">SILENT MOUSE M5</text>
+</svg>

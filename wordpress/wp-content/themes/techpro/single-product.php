@@ -18,6 +18,10 @@ get_header();
     $features  = get_post_meta( get_the_ID(), '_product_features', true );
     $specs     = get_post_meta( get_the_ID(), '_product_specs', true );
     $gallery   = get_post_meta( get_the_ID(), '_product_gallery', true );
+    $sku       = get_post_meta( get_the_ID(), '_product_sku', true );
+    $stock     = get_post_meta( get_the_ID(), '_product_stock_status', true );
+    $image     = sanitize_file_name( get_post_meta( get_the_ID(), '_product_image', true ) );
+    $image_url = $image ? get_theme_file_uri( '/assets/products/' . $image ) : '';
     $gallery_ids = $gallery ? array_filter( array_map('intval', explode(',', $gallery)) ) : [];
     $cats      = wp_get_post_terms( get_the_ID(), 'product_cat' );
 ?>
@@ -28,7 +32,9 @@ get_header();
             <!-- Product Gallery -->
             <div class="product-gallery">
                 <div class="gallery-main" id="gallery-main">
-                    <?php if ( has_post_thumbnail() ) : ?>
+                    <?php if ( $image_url ) : ?>
+                        <img class="gallery-main-image" id="main-product-image" src="<?php echo esc_url($image_url); ?>" alt="<?php echo esc_attr(get_the_title()); ?>" width="640" height="480">
+                    <?php elseif ( has_post_thumbnail() ) : ?>
                         <?php the_post_thumbnail( 'product-detail', [
                             'class' => 'gallery-main-image',
                             'id'    => 'main-product-image',
@@ -73,6 +79,17 @@ get_header();
                 <?php endif; ?>
 
                 <h1 class="product-detail-title"><?php the_title(); ?></h1>
+
+                <?php if ( $sku || $stock ) : ?>
+                <div class="product-detail-meta">
+                    <?php if ( $sku ) : ?><span>Mã sản phẩm: <strong><?php echo esc_html($sku); ?></strong></span><?php endif; ?>
+                    <?php if ( $stock ) : ?>
+                        <span class="product-stock<?php echo $stock === 'instock' ? ' is-in-stock' : ' is-out-of-stock'; ?>">
+                            <?php echo $stock === 'instock' ? 'Còn hàng' : 'Tạm hết hàng'; ?>
+                        </span>
+                    <?php endif; ?>
+                </div>
+                <?php endif; ?>
 
                 <?php if ( $price ) : ?>
                 <div class="product-detail-price">

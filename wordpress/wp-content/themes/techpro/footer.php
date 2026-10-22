@@ -24,9 +24,9 @@
             <div class="footer-col">
                 <h4>Sản phẩm</h4>
                 <ul>
+                    <li><a href="<?php echo esc_url(home_url('/san-pham/')); ?>">Tất cả sản phẩm</a></li>
                     <li><a href="<?php echo esc_url(home_url('/danh-muc/laptop')); ?>">Laptop</a></li>
-                    <li><a href="<?php echo esc_url(home_url('/danh-muc/smartphone')); ?>">Smartphone</a></li>
-                    <li><a href="<?php echo esc_url(home_url('/danh-muc/tablet')); ?>">Tablet</a></li>
+                    <li><a href="<?php echo esc_url(home_url('/danh-muc/man-hinh')); ?>">Màn hình</a></li>
                     <li><a href="<?php echo esc_url(home_url('/danh-muc/phu-kien')); ?>">Phụ kiện</a></li>
                     <li><a href="<?php echo esc_url(home_url('/danh-muc/am-thanh')); ?>">Âm thanh</a></li>
                 </ul>
@@ -35,10 +35,8 @@
                 <h4>Thông tin</h4>
                 <ul>
                     <li><a href="<?php echo esc_url(home_url('/ve-chung-toi')); ?>">Về chúng tôi</a></li>
-                    <li><a href="<?php echo esc_url(home_url('/tin-tuc')); ?>">Tin tức & Khuyến mãi</a></li>
-                    <li><a href="<?php echo esc_url(home_url('/chinh-sach-bao-hanh')); ?>">Chính sách bảo hành</a></li>
-                    <li><a href="<?php echo esc_url(home_url('/chinh-sach-doi-tra')); ?>">Chính sách đổi trả</a></li>
-                    <li><a href="<?php echo esc_url(home_url('/privacy-policy')); ?>">Bảo mật thông tin</a></li>
+                    <li><a href="<?php echo esc_url(home_url('/danh-muc/')); ?>">Danh mục sản phẩm</a></li>
+                    <li><a href="<?php echo esc_url(home_url('/lien-he/')); ?>">Liên hệ tư vấn</a></li>
                 </ul>
             </div>
             <div class="footer-col">
@@ -55,9 +53,6 @@
             <p>© <?php echo date('Y'); ?> TechPro Việt Nam. Bảo lưu mọi quyền. | 
                <em>Dự án học thuật — MSSV: DTC245200863 — Triển Khai &amp; Quản Trị Hệ Thống</em>
             </p>
-            <div class="social-links">
-                <a href="<?php echo esc_url(home_url('/chinh-sach-bao-hanh')); ?>" class="social-link" title="Bảo hành">🛡️</a>
-            </div>
         </div>
     </div>
 </footer>

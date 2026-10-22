@@ -42,7 +42,7 @@ add_action( 'after_setup_theme', 'techpro_setup' );
 // ============================================================
 function techpro_scripts() {
     wp_enqueue_style( 'google-fonts', 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap', [], null );
-    wp_enqueue_style( 'techpro-style', get_stylesheet_uri(), [ 'google-fonts' ], '2.0.0' );
+    wp_enqueue_style( 'techpro-style', get_stylesheet_uri(), [ 'google-fonts' ], '2.1.0' );
     wp_enqueue_script( 'techpro-main', get_template_directory_uri() . '/assets/js/main.js', [], '2.0.0', true );
 
     // Pass AJAX URL and nonce to JavaScript
@@ -203,6 +203,8 @@ function techpro_product_details_callback( $post ) {
     $old_price  = get_post_meta( $post->ID, '_product_old_price', true );
     $features   = get_post_meta( $post->ID, '_product_features', true );
     $badge      = get_post_meta( $post->ID, '_product_badge', true );
+    $sku        = get_post_meta( $post->ID, '_product_sku', true );
+    $stock      = get_post_meta( $post->ID, '_product_stock_status', true );
     $specs      = get_post_meta( $post->ID, '_product_specs', true );
     $featured   = get_post_meta( $post->ID, '_product_featured', true );
     ?>
@@ -218,6 +220,19 @@ function techpro_product_details_callback( $post ) {
         <tr>
             <th><label for="product_badge">Nhãn (badge)</label></th>
             <td><input type="text" id="product_badge" name="product_badge" value="<?php echo esc_attr($badge); ?>" class="regular-text" placeholder="ví dụ: Mới, Hot, Sale"></td>
+        </tr>
+        <tr>
+            <th><label for="product_sku">Mã SKU</label></th>
+            <td><input type="text" id="product_sku" name="product_sku" value="<?php echo esc_attr($sku); ?>" class="regular-text"></td>
+        </tr>
+        <tr>
+            <th><label for="product_stock_status">Tình trạng kho</label></th>
+            <td>
+                <select id="product_stock_status" name="product_stock_status">
+                    <option value="instock" <?php selected($stock, 'instock'); ?>>Còn hàng</option>
+                    <option value="outofstock" <?php selected($stock, 'outofstock'); ?>>Tạm hết hàng</option>
+                </select>
+            </td>
         </tr>
         <tr>
             <th><label for="product_featured">Sản phẩm nổi bật</label></th>
@@ -300,11 +315,15 @@ function techpro_save_product_meta( $post_id ) {
     if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return;
     if ( ! current_user_can( 'edit_post', $post_id ) ) return;
 
-    $text_fields = [ 'product_price', 'product_old_price', 'product_badge' ];
+    $text_fields = [ 'product_price', 'product_old_price', 'product_badge', 'product_sku' ];
     foreach ( $text_fields as $field ) {
         if ( isset( $_POST[$field] ) ) {
             update_post_meta( $post_id, '_' . $field, sanitize_text_field( $_POST[$field] ) );
         }
+    }
+    if ( isset( $_POST['product_stock_status'] ) ) {
+        $stock = sanitize_key( $_POST['product_stock_status'] );
+        update_post_meta( $post_id, '_product_stock_status', in_array( $stock, [ 'instock', 'outofstock' ], true ) ? $stock : 'outofstock' );
     }
 
     $textarea_fields = [ 'product_features', 'product_specs' ];

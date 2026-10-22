@@ -35,7 +35,7 @@
 | # | Yêu cầu | Công nghệ |
 |---|---|---|
 | 1 | Quản lý mã nguồn | Git + GitHub |
-| 2 | Website WordPress | WordPress 6.4 + Custom Theme |
+| 2 | Website WordPress | WordPress 7.1 + Custom Theme |
 | 3 | Cơ sở dữ liệu | MySQL 8.0 + phpMyAdmin |
 | 4 | Reverse Proxy | Nginx + HTTPS (self-signed) |
 | 5 | Giám sát metrics | Prometheus + Exporters |
@@ -50,17 +50,17 @@
 
 | Thành phần | Image/Phiên bản | Mục đích |
 |---|---|---|
-| **WordPress** | wordpress:6.4.3-php8.1-fpm-alpine | CMS chính |
-| **MySQL** | mysql:8.0.36 | Cơ sở dữ liệu |
+| **WordPress** | wordpress:7.1.3-php8.3-fpm-alpine | CMS chính |
+| **MySQL** | mysql:8.0.46 | Cơ sở dữ liệu |
 | **phpMyAdmin** | phpmyadmin:5.2.1-apache | Quản trị database |
 | **Nginx** | nginx:1.25-alpine | Reverse proxy + HTTPS |
-| **Prometheus** | prom/prometheus:v2.50.1 | Thu thập metrics |
-| **Grafana** | grafana/grafana:10.3.3 | Dashboard trực quan |
+| **Prometheus** | prom/prometheus:v3.15.1 | Thu thập metrics |
+| **Grafana** | grafana/grafana:13.2.4 | Dashboard trực quan |
 | **Loki** | grafana/loki:2.9.4 | Lưu trữ logs |
 | **Promtail** | grafana/promtail:2.9.4 | Thu thập logs (EOL*) |
 | **cAdvisor** | gcr.io/cadvisor/cadvisor:v0.49.1 | Container metrics |
 | **Node Exporter** | prom/node-exporter:v1.7.0 | Host metrics |
-| **Nginx Exporter** | nginx/nginx-prometheus-exporter:1.1.0 | Nginx metrics |
+| **Nginx Exporter** | nginx/nginx-prometheus-exporter:1.5.0 | Nginx metrics |
 | **MySQL Exporter** | prom/mysqld-exporter:v0.15.1 | MySQL metrics |
 
 > ⚠️ *Promtail đã đạt End-of-Life. Được sử dụng theo yêu cầu học thuật của bài tập. Phiên bản thay thế trong production: [Grafana Alloy](https://grafana.com/docs/alloy/).
@@ -163,11 +163,13 @@ DTC245200863-topic3-wordpress-product/
 │   └── loki-config.yml         # Loki storage + retention config
 │
 ├── promtail/
-│   └── promtail-config.yml     # Log scrape: Nginx + Docker containers
+│   └── promtail-config.yml     # Log scrape: Nginx access/error logs
 │
 ├── scripts/
 │   ├── deploy.ps1              # Deployment script (PowerShell)
-│   ├── generate-cert.ps1       # SSL cert generation
+│   ├── deploy.sh               # Deployment script (Linux/macOS)
+│   ├── generate-cert.ps1       # Development certificate (PowerShell)
+│   ├── generate-cert.sh        # Development certificate (Linux/macOS)
 │   └── health-check.sh         # Health check script
 │
 ├── tests/
@@ -192,7 +194,7 @@ DTC245200863-topic3-wordpress-product/
 | OS | Windows 10/11, macOS, Linux | Linux/macOS |
 | Docker | 24.0+ | 26.0+ |
 | Docker Compose | 2.20+ | 2.27+ |
-| OpenSSL | 3.x | 3.x (để tạo cert) |
+| OpenSSL | Tùy chọn | 3.x; hoặc Docker để tạo cert |
 
 ---
 
@@ -226,6 +228,13 @@ MYSQL_EXPORTER_PASSWORD=<mật_khẩu_exporter>
 
 > ⚠️ **QUAN TRỌNG:** KHÔNG commit file `.env` vào Git!
 
+Đặt URL website theo địa chỉ người dùng sẽ mở:
+
+```env
+WORDPRESS_SITE_URL=http://localhost
+WEB_BIND_ADDRESS=127.0.0.1
+```
+
 ### Bước 3: Tạo SSL certificate
 
 **Windows (PowerShell):**
@@ -235,15 +244,20 @@ MYSQL_EXPORTER_PASSWORD=<mật_khẩu_exporter>
 
 **Linux/macOS:**
 ```bash
-mkdir -p nginx/certs
-openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
-  -keyout nginx/certs/localhost.key \
-  -out nginx/certs/localhost.crt \
-  -subj "/C=VN/ST=HoChiMinh/L=HoChiMinh/O=TechPro/CN=localhost" \
-  -addext "subjectAltName=DNS:localhost,IP:127.0.0.1"
+sh scripts/generate-cert.sh
 ```
 
-> ℹ️ Certificate tự ký cho môi trường phát triển cục bộ. Browser sẽ hiển thị cảnh báo bảo mật — đây là hành vi bình thường đối với self-signed certificate.
+Để tạo chứng chỉ dev có tên host và IP trong SAN:
+
+```powershell
+.\scripts\generate-cert.ps1 -DnsName techpro.local -IpAddress 192.168.1.20
+```
+
+```bash
+sh scripts/generate-cert.sh techpro.local 192.168.1.20
+```
+
+> ℹ️ Chứng chỉ tự ký dùng cho phát triển sẽ hiện cảnh báo trình duyệt. Triển khai Internet cần domain và chứng chỉ TLS được CA tin cậy cấp.
 
 ### Bước 4: Tạo thư mục logs và data
 
@@ -257,6 +271,17 @@ mkdir -p nginx/logs
 
 ### Khởi động toàn bộ stack
 
+Windows PowerShell:
+```powershell
+.\scripts\deploy.ps1
+```
+
+Linux/macOS:
+```bash
+sh scripts/deploy.sh
+```
+
+Hoặc sau khi đã tạo certificate:
 ```bash
 docker compose up -d
 ```
@@ -292,14 +317,34 @@ docker compose restart
 
 | Dịch vụ | URL | Tài khoản |
 |---|---|---|
-| **Website WordPress** | https://localhost | Cấu hình lúc setup |
-| **WordPress Admin** | https://localhost/wp-admin | admin / (setup) |
+| **Website WordPress** | URL trong `WORDPRESS_SITE_URL` (mặc định `http://localhost`) | Cấu hình lúc setup |
+| **WordPress Admin** | `<WORDPRESS_SITE_URL>/wp-admin` | Tài khoản tạo lúc setup |
 | **phpMyAdmin** | http://localhost:8080 | root / MYSQL_ROOT_PASSWORD |
 | **Grafana** | http://localhost:3000 | admin / GF_SECURITY_ADMIN_PASSWORD |
 | **Prometheus** | http://localhost:9090 | Không cần auth |
 | **Loki API** | http://localhost:3100 | Không cần auth |
 
-> ℹ️ Prometheus, Grafana, Loki chỉ bind vào 127.0.0.1 — không thể truy cập từ mạng ngoài.
+> ℹ️ phpMyAdmin, Prometheus, Grafana và Loki chỉ bind vào `127.0.0.1`. Không mở các cổng quản trị này ra mạng ngoài.
+
+### Truy cập từ thiết bị khác cùng mạng LAN
+
+1. Lấy IPv4 LAN của máy chạy Docker (ví dụ `192.168.1.20`): `ipconfig` (Windows), `ipconfig getifaddr en0` (macOS), hoặc `hostname -I` (Linux).
+2. Đặt trong `.env`:
+
+   ```env
+   WORDPRESS_SITE_URL=http://192.168.1.20
+   WEB_BIND_ADDRESS=0.0.0.0
+   ```
+
+3. Cho phép cổng HTTP (mặc định `80`) qua firewall của máy chủ.
+4. Áp dụng URL mới bằng `docker compose up -d --force-recreate wordpress nginx`.
+5. Mở `http://192.168.1.20` ở thiết bị khác.
+
+`localhost` luôn trỏ về thiết bị đang mở trình duyệt. HTTP không mã hóa dữ liệu, chỉ dùng trong mạng tin cậy; không đưa cấu hình này ra Internet. HTTPS hiện dùng chứng chỉ tự ký. Để HTTPS không cảnh báo, cần domain/IP cùng chứng chỉ hợp lệ được CA tin cậy cấp và đặt `WORDPRESS_SITE_URL` đúng domain.
+
+Docker images không bị ghim vào AMD64, cho phép Docker chọn kiến trúc image phù hợp với máy chủ. Windows/macOS cần Docker Desktop ở chế độ Linux containers. Với Docker Desktop, số liệu cAdvisor/Node Exporter phản ánh Linux VM của Docker, không đại diện đầy đủ cho Windows/macOS host.
+
+Các image đang dùng đều cung cấp manifest `linux/amd64` và `linux/arm64`; máy Apple Silicon/Raspberry Pi không cần giả lập AMD64. Nếu trình duyệt từng lưu HSTS cho `localhost` từ cấu hình cũ, có thể xóa chính sách HSTS của `localhost` trong trình duyệt hoặc dùng hostname/IP LAN đã cấu hình.
 
 ---
 
@@ -307,8 +352,7 @@ docker compose restart
 
 ### Lần đầu setup
 
-1. Mở https://localhost
-2. Bỏ qua cảnh báo SSL (certificate self-signed)
+1. Mở địa chỉ trong `WORDPRESS_SITE_URL` (mặc định `http://localhost`)
 3. Chọn ngôn ngữ: **Tiếng Việt**
 4. Nhập thông tin site:
    - **Tên site:** TechPro — Thiết Bị Công Nghệ
@@ -319,21 +363,16 @@ docker compose restart
 
 ### Kích hoạt theme TechPro
 
-```
-WP Admin → Giao diện → Themes → TechPro → Activate
+Sau khi hoàn tất cài đặt WordPress lần đầu, có thể khởi tạo theme, các trang, menu và 8 sản phẩm demo tự động bằng PowerShell:
+
+```powershell
+docker cp .\scripts\initialize-wordpress.php techpro_wordpress:/tmp/initialize-wordpress.php
+docker compose exec -T wordpress php /tmp/initialize-wordpress.php
 ```
 
-### Tạo Custom Post Types
+Script có thể chạy lại an toàn: cập nhật các nội dung demo theo slug, tạo lại menu TechPro và chỉ xóa bài viết mặc định có slug `chao-moi-nguoi`. Ảnh sản phẩm là SVG nội bộ trong `wordpress/wp-content/themes/techpro/assets/products`.
 
-Theme tự động đăng ký CPT `product` và taxonomy `product_cat` khi activate.
-
-### Tạo trang mẫu
-
-```
-WP Admin → Pages → Add New
-- Trang Liên Hệ: Template = "Trang Liên Hệ"
-- Về Chúng Tôi: Template = "Trang Về Chúng Tôi"
-```
+Theme tự đăng ký Custom Post Type `product` và taxonomy `product_cat`; script tạo trang tĩnh, gán đúng page template, đặt Trang chủ làm front page và gắn menu vào vị trí điều hướng chính.
 
 ---
 
@@ -348,6 +387,8 @@ WP Admin → Pages → Add New
    - `node_exporter`
    - `nginx`
    - `mysql`
+
+> Trên Docker Desktop for Windows/macOS, Node Exporter và cAdvisor thu thập số liệu từ môi trường Linux của Docker Desktop; chúng không đại diện đầy đủ cho host Windows/macOS.
 
 ### Đăng nhập Grafana
 
@@ -409,17 +450,7 @@ curl -s http://localhost:3100/ready
   | status >= "500"
 ```
 
-```logql
-# Query 5: WordPress container errors
-{job="docker_containers", service="wordpress"} |~ "error|Error|WARNING"
-```
-
-```logql
-# Query 6: Tất cả container logs dự án
-{compose_project="techpro_wp"} | line_format "{{.service}}: {{.line}}"
-```
-
-> ℹ️ **Lưu ý:** Promtail 2.9.4 là phiên bản EOL, được sử dụng theo yêu cầu học thuật. Production alternative: Grafana Alloy.
+> ℹ️ **Lưu ý:** Promtail thu thập Nginx access/error logs qua thư mục chia sẻ, tránh phụ thuộc vào đường dẫn log nội bộ riêng của Linux. Promtail 2.9.4 đã EOL; production nên dùng Grafana Alloy.
 
 ---
 
@@ -434,7 +465,7 @@ curl -s http://localhost:3100/ready
 | 3 | **Least-privilege DB** — wordpress_user chỉ có quyền cần thiết | `mysql -u root -e "SHOW GRANTS FOR 'wordpress_user'@'%'"` | ✅ |
 | 4 | **Monitoring account read-only** — exporter chỉ PROCESS, REPLICATION CLIENT, SELECT | `SHOW GRANTS FOR 'exporter'@'%'` | ✅ |
 | 5 | **Nginx security headers** — X-Frame-Options, X-Content-Type-Options, etc. | `curl -skI https://localhost/` | ✅ |
-| 6 | **HTTPS bắt buộc** — HTTP redirect sang HTTPS | `curl -si http://localhost/` → 301 | ✅ |
+| 6 | **HTTP cho LAN/dev, HTTPS tùy chọn** — HTTPS dùng cert tự ký | `curl -si http://localhost/` → 200 | Dev |
 | 7 | **Ports tối thiểu** — Monitoring chỉ bind 127.0.0.1 | `docker compose ps` | ✅ |
 | 8 | **no-new-privileges** — Tất cả services trừ cAdvisor | `security_opt: [no-new-privileges:true]` | ✅ |
 | 9 | **Secrets qua .env** — Không hardcode trong code | `git log --all -p | grep -i password` | ✅ |
@@ -450,14 +481,13 @@ X-Content-Type-Options: nosniff
 X-XSS-Protection: 1; mode=block
 Referrer-Policy: strict-origin-when-cross-origin
 Permissions-Policy: geolocation=(), microphone=(), camera=()
-Strict-Transport-Security: max-age=31536000; includeSubDomains
 Content-Security-Policy: default-src 'self' https: data: 'unsafe-inline' 'unsafe-eval';
 ```
 
 ### Kiểm tra headers
 
 ```bash
-curl -skI https://localhost/ | grep -E "X-Frame|X-Content|X-XSS|Strict|Referrer|Content-Security"
+curl -sI http://localhost/ | grep -E "X-Frame|X-Content|X-XSS|Referrer|Content-Security"
 ```
 
 ---
@@ -471,7 +501,8 @@ curl -skI https://localhost/ | grep -E "X-Frame|X-Content|X-XSS|Strict|Referrer|
 bash scripts/health-check.sh
 
 # Windows (manual checks)
-curl -sk https://localhost/health
+curl -s http://localhost/health
+curl -s http://localhost/
 curl -s http://localhost:9090/-/healthy
 curl -s http://localhost:3000/api/health
 curl -s http://localhost:3100/ready
@@ -622,7 +653,7 @@ docker compose down --rmi all
 
 ## 📝 Thông tin học thuật
 
-- **Sinh viên:** [Họ tên] — MSSV: DTC245200863
+- **Sinh viên:** Giàng A Chiến — MSSV: DTC245200863
 - **Môn học:** Triển Khai và Quản Trị Hệ Thống Phần Mềm
 - **Đề tài:** 3 — Website Quảng Bá Sản Phẩm Sử Dụng WordPress
 - **Thương hiệu:** TechPro — Thương hiệu học thuật, không phải doanh nghiệp thực

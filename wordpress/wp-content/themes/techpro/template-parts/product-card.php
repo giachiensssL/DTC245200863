@@ -11,13 +11,19 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 $price     = get_post_meta( get_the_ID(), '_product_price', true );
 $old_price = get_post_meta( get_the_ID(), '_product_old_price', true );
 $badge     = get_post_meta( get_the_ID(), '_product_badge', true );
+$sku       = get_post_meta( get_the_ID(), '_product_sku', true );
+$stock     = get_post_meta( get_the_ID(), '_product_stock_status', true );
+$image     = sanitize_file_name( get_post_meta( get_the_ID(), '_product_image', true ) );
+$image_url = $image ? get_theme_file_uri( '/assets/products/' . $image ) : '';
 $cats      = wp_get_post_terms( get_the_ID(), 'product_cat' );
 $cat_name  = ( $cats && ! is_wp_error($cats) ) ? $cats[0]->name : '';
 ?>
 <div class="product-card" data-category="<?php echo $cats && !is_wp_error($cats) ? esc_attr($cats[0]->slug) : ''; ?>">
     <a href="<?php the_permalink(); ?>" class="product-card-link" aria-label="<?php echo esc_attr('Xem chi tiết: ' . get_the_title()); ?>">
         <div class="product-image">
-            <?php if ( has_post_thumbnail() ) : ?>
+            <?php if ( $image_url ) : ?>
+                <img src="<?php echo esc_url($image_url); ?>" alt="<?php echo esc_attr(get_the_title()); ?>" loading="lazy" width="640" height="480">
+            <?php elseif ( has_post_thumbnail() ) : ?>
                 <?php the_post_thumbnail( 'product-card', [ 'alt' => esc_attr(get_the_title()), 'loading' => 'lazy' ] ); ?>
             <?php else : ?>
                 <span class="product-image-placeholder">📦</span>
@@ -25,10 +31,18 @@ $cat_name  = ( $cats && ! is_wp_error($cats) ) ? $cats[0]->name : '';
             <?php if ( $badge ) : ?>
                 <span class="product-badge<?php echo ($badge === 'Mới' ? ' new' : ''); ?>"><?php echo esc_html($badge); ?></span>
             <?php endif; ?>
+            <?php if ( $stock ) : ?>
+                <span class="product-stock<?php echo $stock === 'instock' ? ' is-in-stock' : ' is-out-of-stock'; ?>">
+                    <?php echo $stock === 'instock' ? 'Còn hàng' : 'Tạm hết hàng'; ?>
+                </span>
+            <?php endif; ?>
         </div>
         <div class="product-info">
             <?php if ( $cat_name ) : ?>
                 <div class="product-category"><?php echo esc_html($cat_name); ?></div>
+            <?php endif; ?>
+            <?php if ( $sku ) : ?>
+                <div class="product-sku">SKU: <?php echo esc_html($sku); ?></div>
             <?php endif; ?>
             <h3 class="product-name"><?php the_title(); ?></h3>
             <div class="product-desc"><?php echo wp_trim_words( get_the_excerpt(), 15, '...' ); ?></div>

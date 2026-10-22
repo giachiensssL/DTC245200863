@@ -22,15 +22,16 @@
             <span class="logo-text">Tech<span>Pro</span></span>
         </a>
 
-        <nav class="main-nav" id="main-nav" role="navigation" aria-label="<?php esc_attr_e('Primary Menu', 'techpro'); ?>">
-            <ul>
-                <li><a href="<?php echo esc_url(home_url('/')); ?>"><?php _e('Trang chủ', 'techpro'); ?></a></li>
-                <li><a href="<?php echo esc_url(home_url('/san-pham')); ?>"><?php _e('Sản phẩm', 'techpro'); ?></a></li>
-                <li><a href="<?php echo esc_url(home_url('/danh-muc')); ?>"><?php _e('Danh mục', 'techpro'); ?></a></li>
-                <li><a href="<?php echo esc_url(home_url('/ve-chung-toi')); ?>"><?php _e('Về chúng tôi', 'techpro'); ?></a></li>
-                <li><a href="<?php echo esc_url(home_url('/tin-tuc')); ?>"><?php _e('Tin tức', 'techpro'); ?></a></li>
-                <li><a href="<?php echo esc_url(home_url('/lien-he')); ?>"><?php _e('Liên hệ', 'techpro'); ?></a></li>
-            </ul>
+        <nav class="main-nav" id="main-nav" aria-label="<?php esc_attr_e('Primary Menu', 'techpro'); ?>">
+            <?php
+            wp_nav_menu( [
+                'theme_location' => 'primary',
+                'container'      => false,
+                'menu_class'     => 'main-nav-menu',
+                'fallback_cb'    => false,
+                'depth'          => 1,
+            ] );
+            ?>
         </nav>
 
         <div class="header-cta">
@@ -39,7 +40,7 @@
             </a>
         </div>
 
-        <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+        <button class="nav-toggle" id="nav-toggle" aria-label="Mở menu điều hướng" aria-controls="main-nav" aria-expanded="false">
             <span></span>
             <span></span>
             <span></span>

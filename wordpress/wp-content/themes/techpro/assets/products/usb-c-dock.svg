@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 480" role="img" aria-labelledby="title">
+<title id="title">Hub USB-C TechPro Dock 8 trong 1</title>
+<defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#e8f7fa"/><stop offset="1" stop-color="#c7d8f4"/></linearGradient><linearGradient id="dock" x2="0" y2="1"><stop stop-color="#91a3b9"/><stop offset="1" stop-color="#4b5d76"/></linearGradient></defs>
+<rect width="640" height="480" rx="28" fill="url(#bg)"/><ellipse cx="320" cy="347" rx="212" ry="30" fill="#596e8d" opacity=".2"/>
+<path d="M116 188h371a35 35 0 0 1 35 35v77a35 35 0 0 1-35 35H151a35 35 0 0 1-35-35z" fill="url(#dock)" stroke="#dbe6f0" stroke-width="7"/>
+<rect x="150" y="219" width="57" height="39" rx="7" fill="#1d2c43"/><rect x="224" y="219" width="57" height="39" rx="7" fill="#1d2c43"/><rect x="298" y="219" width="57" height="39" rx="7" fill="#1d2c43"/><rect x="372" y="219" width="57" height="39" rx="7" fill="#1d2c43"/><rect x="446" y="219" width="43" height="39" rx="7" fill="#1d2c43"/>
+<path d="M116 251H72q-26 0-26 24" fill="none" stroke="#586d8a" stroke-width="14" stroke-linecap="round"/><rect x="38" y="269" width="26" height="18" rx="5" fill="#d9e8f7"/>
+<circle cx="173" cy="287" r="4" fill="#00e6bd"/><circle cx="247" cy="287" r="4" fill="#00e6bd"/><circle cx="321" cy="287" r="4" fill="#00e6bd"/><text x="320" y="408" fill="#344c69" font-family="Arial,sans-serif" font-size="23" text-anchor="middle" letter-spacing="5">USB-C DOCK 8-IN-1</text>
+</svg>
