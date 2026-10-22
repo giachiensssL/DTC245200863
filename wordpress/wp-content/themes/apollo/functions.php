@@ -198,9 +198,44 @@ function apollo_enqueue_assets() {
 		(string) filemtime( get_stylesheet_directory() . '/style.css' ),
 		true
 	);
+	if ( is_front_page() ) {
+		wp_enqueue_script(
+			'apollo-model-viewer',
+			get_stylesheet_directory_uri() . '/assets/js/apollo-model-viewer.js',
+			array(),
+			(string) filemtime( get_stylesheet_directory() . '/assets/js/apollo-model-viewer.js' ),
+			true
+		);
+	}
 	wp_enqueue_script( 'wc-cart-fragments' );
 }
 add_action( 'wp_enqueue_scripts', 'apollo_enqueue_assets', 100 );
+
+function apollo_model_viewer_import_map() {
+	if ( ! is_front_page() ) {
+		return;
+	}
+	?>
+	<script type="importmap">
+		{
+			"imports": {
+				"three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
+				"three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"
+			}
+		}
+	</script>
+	<?php
+}
+add_action( 'wp_head', 'apollo_model_viewer_import_map', 1 );
+
+function apollo_model_viewer_module_script( $tag, $handle ) {
+	if ( 'apollo-model-viewer' !== $handle ) {
+		return $tag;
+	}
+
+	return str_replace( '<script ', '<script type="module" ', $tag );
+}
+add_filter( 'script_loader_tag', 'apollo_model_viewer_module_script', 10, 2 );
 
 function apollo_customize_register( $wp_customize ) {
 	$wp_customize->add_section(

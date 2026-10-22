@@ -14,8 +14,8 @@ if ( ! $hero_image ) {
 	$hero_image = get_stylesheet_directory_uri() . '/assets/images/backgoud.webp';
 }
 
-/* Editorial detail image */
-$detail_img = get_stylesheet_directory_uri() . '/assets/images/a6.webp';
+/* Interactive 3D model shown in the editorial section */
+$detail_model = get_stylesheet_directory_uri() . '/assets/models/apollo-a9/FIANL_MODEL_EVO.fbx';
 
 /* Promo split image */
 $promo_img = get_stylesheet_directory_uri() . '/assets/images/ao1.webp';
@@ -103,13 +103,10 @@ $apollo_categories = function_exists( 'apollo_get_visible_product_categories' )
 <!-- ═══════════════════════════ 2. KỸ THUẬT TẠO NÊN KIỆT TÁC ═══════ -->
 <section class="apollo-section apollo-section--dark apollo-editorial-section">
 	<div class="apollo-shell apollo-editorial">
-		<div class="apollo-editorial__art">
-			<img
-				src="<?php echo esc_url( $detail_img ); ?>"
-				alt="<?php esc_attr_e( 'Siêu xe Apollo — thiết kế và kỹ thuật đỉnh cao', 'apollo' ); ?>"
-				width="760" height="480" loading="lazy"
-			>
-		</div>
+		<div class="apollo-editorial__art apollo-model-viewer" data-model-url="<?php echo esc_url( $detail_model ); ?>" role="group" aria-label="<?php esc_attr_e( 'Mô hình 3D xe Apollo A9, có thể kéo để xoay 360 độ', 'apollo' ); ?>">
+			<div class="apollo-model-viewer__canvas" aria-hidden="true"></div>
+				<div class="apollo-model-viewer__loading apollo-screen-reader" role="status" aria-live="polite"><?php esc_html_e( 'Đang tải mô hình 3D…', 'apollo' ); ?></div>
+			</div>
 		<div class="apollo-editorial__copy">
 			<span class="apollo-eyebrow"><?php esc_html_e( 'Thiết kế · Kỹ thuật · Trải nghiệm', 'apollo' ); ?></span>
 			<h2><?php esc_html_e( 'CẢM HỨNG TỪ THẾ GIỚI SIÊU XE', 'apollo' ); ?></h2>

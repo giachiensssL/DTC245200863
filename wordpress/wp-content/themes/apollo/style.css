@@ -751,6 +751,7 @@ img { display: block; max-width: 100%; height: auto; }
 }
 
 .apollo-editorial__art {
+    position: relative;
     overflow: hidden;
     background: #181818;
     border-radius: 6px;
@@ -759,15 +760,45 @@ img { display: block; max-width: 100%; height: auto; }
     min-height: 380px;
 }
 
-.apollo-editorial__art img {
-    width: 100%;
-    height: 100%;
-    min-height: 380px;
-    object-fit: cover;
-    transition: transform .5s ease;
+.apollo-model-viewer {
+    min-height: 520px;
+    aspect-ratio: 1.35;
+    isolation: isolate;
 }
 
-.apollo-editorial__art:hover img { transform: scale(1.025); }
+.apollo-model-viewer__canvas,
+.apollo-model-viewer__canvas canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.apollo-model-viewer__canvas canvas {
+    display: block;
+    touch-action: pan-y;
+    cursor: grab;
+}
+
+.apollo-model-viewer__canvas canvas:active { cursor: grabbing; }
+
+.apollo-model-viewer__loading {
+    position: absolute;
+    inset: 50% auto auto 50%;
+    z-index: 1;
+    color: rgba(255, 255, 255, .78);
+    font-size: 12px;
+    letter-spacing: .04em;
+    transform: translate(-50%, -50%);
+}
+
+.apollo-model-viewer__loading[hidden] { display: none; }
+
+.apollo-model-viewer__loading.is-error {
+    width: min(80%, 320px);
+    color: #f0c6bd;
+    text-align: center;
+}
 
 .apollo-editorial__copy .apollo-eyebrow {
     display: inline-block;
@@ -2384,6 +2415,10 @@ img { display: block; max-width: 100%; height: auto; }
     .apollo-editorial { grid-template-columns: 1fr; gap: 24px; }
     .apollo-editorial__art,
     .apollo-editorial__art img { min-height: 260px; }
+    .apollo-editorial-section .apollo-model-viewer {
+        min-height: min(520px, 110vw);
+        aspect-ratio: 1.2;
+    }
 
     /* Vehicles */
     .apollo-vehicles-showcase { grid-template-columns: 1fr; }
@@ -2882,6 +2917,13 @@ body.apollo-site {
     border: 1px solid var(--apollo-soft-line);
     border-radius: 2px;
     box-shadow: 0 16px 38px rgba(16, 16, 16, .09);
+}
+
+.apollo-editorial-section .apollo-model-viewer {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
 }
 
 .apollo-editorial__art img {
