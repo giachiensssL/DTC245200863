@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 700" role="img" aria-labelledby="title desc">
+  <title id="title">Minh họa chi tiết thiết kế xe thể thao</title>
+  <desc id="desc">Đồ họa nguyên bản về hình khối xe thể thao, không phải ảnh hay thông số của mẫu xe cụ thể.</desc>
+  <defs>
+    <linearGradient id="surface" x2="1" y2="1"><stop stop-color="#e1ddd4"/><stop offset="1" stop-color="#bcb6a9"/></linearGradient>
+    <linearGradient id="metal" x2=".1" y2="1"><stop stop-color="#f1ece0"/><stop offset=".4" stop-color="#706a5f"/><stop offset="1" stop-color="#171716"/></linearGradient>
+  </defs>
+  <path fill="url(#surface)" d="M0 0h1100v700H0z"/>
+  <path fill="#c7c1b5" d="M0 510h1100v190H0z"/>
+  <path fill="#a18a62" opacity=".35" d="M75 563h960v3H75z"/>
+  <path fill="url(#metal)" stroke="#5f594e" stroke-width="3" d="m112 473 89-82 130-38 132-139q43-44 106-44l162 9q66 4 112 43l126 107 71 38 45 75-28 49H124z"/>
+  <path fill="#1d2223" stroke="#69604f" stroke-width="2" d="m486 349 101-113q19-20 64-20l117 7q43 3 73 32l93 94z"/>
+  <path fill="#101414" d="m588 238-82 103h250V234z"/>
+  <path fill="#101414" d="m766 238 83 7q38 4 58 28l55 70H766z"/>
+  <path fill="#dfd1b2" d="m123 449 82-58 90-29-31 65-133 42zm795-56 117 21-4 16-116-5z"/>
+  <circle cx="296" cy="500" r="65" fill="#191817" stroke="#8c7652" stroke-width="6"/>
+  <circle cx="871" cy="500" r="65" fill="#191817" stroke="#8c7652" stroke-width="6"/>
+  <circle cx="296" cy="500" r="34" fill="#b6afa1"/>
+  <circle cx="871" cy="500" r="34" fill="#b6afa1"/>
+  <text x="74" y="642" fill="#514d45" font-family="Arial,sans-serif" font-size="14" letter-spacing="3">ĐỒ HỌA Ý TƯỞNG · KHÔNG PHẢI MẪU XE CỤ THỂ</text>
+</svg>

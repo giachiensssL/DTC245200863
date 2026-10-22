@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Minh họa xe thể thao trừu tượng</title>
+  <desc id="desc">Minh họa nguyên bản theo phong cách tối, không đại diện cho mẫu xe hoặc hãng xe cụ thể.</desc>
+  <defs>
+    <linearGradient id="bg" x2="1" y2="1">
+      <stop stop-color="#292722"/>
+      <stop offset=".52" stop-color="#11110f"/>
+      <stop offset="1" stop-color="#050505"/>
+    </linearGradient>
+    <linearGradient id="body" x2=".2" y2="1">
+      <stop stop-color="#c9b995"/>
+      <stop offset=".28" stop-color="#554c3d"/>
+      <stop offset=".64" stop-color="#171715"/>
+      <stop offset="1" stop-color="#060606"/>
+    </linearGradient>
+    <linearGradient id="light" x2="0" y2="1">
+      <stop stop-color="#e7d6af" stop-opacity=".85"/>
+      <stop offset="1" stop-color="#b08d57" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="glow">
+      <stop stop-color="#c3a36b" stop-opacity=".28"/>
+      <stop offset="1" stop-color="#c3a36b" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <path fill="url(#bg)" d="M0 0h1600v900H0z"/>
+  <ellipse cx="1110" cy="500" rx="560" ry="420" fill="url(#glow)"/>
+  <path fill="#34322d" d="M0 610h1600v290H0z"/>
+  <path fill="#151513" d="M0 652h1600v7H0z"/>
+  <path fill="#b08d57" opacity=".35" d="M840 706h650v2H840z"/>
+  <path fill="url(#light)" opacity=".3" d="M1110 130h220l160 435h-540z"/>
+  <path fill="url(#body)" stroke="#a99166" stroke-opacity=".58" stroke-width="3" d="m333 574 70-91 160-50 132-155q48-52 136-55l235 8q90 4 152 61l159 144 104 47 38 102-35 59H340z"/>
+  <path fill="#151817" stroke="#a88d5c" stroke-opacity=".65" stroke-width="2" d="m702 420 119-137q23-23 75-24l169 8q57 4 91 40l105 113z"/>
+  <path fill="#080b0c" d="m840 289-102 119h316V286z"/>
+  <path fill="#090b0c" d="m1073 290 113 9q49 5 75 37l81 72h-269z"/>
+  <path fill="none" stroke="#e1d2b0" stroke-opacity=".72" stroke-width="8" d="m1132 468 192 17"/>
+  <path fill="#d9c69e" d="m338 550 80-62 98-31-34 74-148 44z"/>
+  <path fill="#be9f68" d="m1396 548 84 24-4 18-89-8z"/>
+  <path fill="#050505" stroke="#b08d57" stroke-width="7" d="M469 614a99 99 0 1 0 198 0 99 99 0 1 0-198 0"/>
+  <path fill="#050505" stroke="#b08d57" stroke-width="7" d="M1190 614a99 99 0 1 0 198 0 99 99 0 1 0-198 0"/>
+  <circle cx="568" cy="614" r="53" fill="#22211e" stroke="#9b8b6e" stroke-width="3"/>
+  <circle cx="1289" cy="614" r="53" fill="#22211e" stroke="#9b8b6e" stroke-width="3"/>
+  <path stroke="#a58b5f" stroke-opacity=".6" stroke-width="2" d="M568 563v102m-51-51h102m-87-36 72 72m0-72-72 72M1289 563v102m-51-51h102m-87-36 72 72m0-72-72 72"/>
+  <path fill="none" stroke="#c5a773" stroke-opacity=".6" stroke-width="2" d="m412 491 220-33m279-236 176 6m120 54 207 191"/>
+  <path fill="#b08d57" opacity=".6" d="M101 758h410v2H101zm120 18h280v1H221z"/>
+  <text x="100" y="818" fill="#d0ae76" font-family="Arial,sans-serif" font-size="14" letter-spacing="4">APOLLO AUTOMOBIL · MINH HỌA NGUYÊN BẢN</text>
+</svg>
