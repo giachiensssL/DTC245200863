@@ -1,0 +1,48 @@
+# =============================================================================
+# .gitignore — DTC245200863-topic3-wordpress-product
+# =============================================================================
+
+# --- Environment & Secrets ---
+.env
+*.env.local
+secrets/
+*.key
+*.pem
+*.crt
+*.p12
+*.pfx
+
+# --- SSL/TLS Certificates (local generated) ---
+nginx/certs/*.crt
+nginx/certs/*.key
+nginx/certs/*.pem
+nginx/certs/*.csr
+
+# --- Docker runtime data ---
+nginx/logs/
+mysql/data/
+wordpress/uploads/
+grafana/data/
+loki/data/
+prometheus/data/
+
+# --- OS files ---
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*~
+
+# --- IDE ---
+.vscode/
+.idea/
+
+# --- Logs (runtime) ---
+*.log
+logs/
+
+# --- Test output ---
+test-results/
+coverage/
+tmp/
+temp/
