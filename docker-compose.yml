@@ -59,6 +59,7 @@ services:
       - ./nginx/certs:/etc/nginx/certs:ro
       - ./nginx/logs:/var/log/nginx
       - wordpress_data:/var/www/html:ro
+      - ./wordpress/wp-content/themes/techpro:/var/www/html/wp-content/themes/techpro:ro
     networks:
       - frontend_net
       - app_net

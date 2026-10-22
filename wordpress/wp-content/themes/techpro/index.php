@@ -1,9 +1,53 @@
 <?php
 /**
  * TechPro Homepage Template
+ * Trang chủ với dữ liệu động từ WordPress
+ *
  * @package techpro
  */
 get_header();
+
+// Query featured products
+$featured_products = new WP_Query( [
+    'post_type'      => 'product',
+    'posts_per_page' => 6,
+    'post_status'    => 'publish',
+    'meta_query'     => [ [ 'key' => '_product_featured', 'value' => '1' ] ],
+] );
+
+// Fallback: if no featured products, get latest products
+if ( ! $featured_products->have_posts() ) {
+    $featured_products = new WP_Query( [
+        'post_type'      => 'product',
+        'posts_per_page' => 6,
+        'post_status'    => 'publish',
+        'orderby'        => 'date',
+        'order'          => 'DESC',
+    ] );
+}
+
+// Query categories
+$categories = get_terms( [
+    'taxonomy'   => 'product_cat',
+    'hide_empty' => false,
+    'number'     => 6,
+] );
+
+// Query latest posts
+$latest_posts = new WP_Query( [
+    'post_type'      => 'post',
+    'posts_per_page' => 3,
+    'post_status'    => 'publish',
+] );
+
+// Query FAQs
+$faqs = new WP_Query( [
+    'post_type'      => 'faq',
+    'posts_per_page' => 5,
+    'post_status'    => 'publish',
+    'orderby'        => 'menu_order',
+    'order'          => 'ASC',
+] );
 ?>
 
 <!-- ======== HERO SECTION ======== -->
@@ -61,8 +105,29 @@ get_header();
     </div>
 </section>
 
+<!-- ======== BRAND INTRO SECTION ======== -->
+<section class="brand-intro">
+    <div class="container">
+        <div class="brand-intro-grid">
+            <div class="brand-intro-visual">
+                <div class="brand-logo-large">
+                    <div class="logo-icon-lg">T</div>
+                    <span class="logo-text-lg">Tech<span>Pro</span></span>
+                </div>
+                <p class="brand-tagline">Công nghệ — Chất lượng — Tin cậy</p>
+            </div>
+            <div class="brand-intro-content">
+                <h2>Về <span class="highlight">TechPro</span></h2>
+                <p>Được thành lập năm 2014, TechPro là thương hiệu bán lẻ thiết bị điện tử uy tín hàng đầu Việt Nam. Với hơn 10 năm kinh nghiệm, chúng tôi tự hào phục vụ hơn 50.000 khách hàng trên toàn quốc.</p>
+                <p>Chúng tôi cam kết mang đến sản phẩm chính hãng 100%, giá cả cạnh tranh và dịch vụ hỗ trợ tận tâm nhất. Mỗi sản phẩm đều được kiểm định nghiêm ngặt trước khi đến tay khách hàng.</p>
+                <a href="<?php echo esc_url(home_url('/ve-chung-toi')); ?>" class="btn btn-outline">Tìm hiểu thêm →</a>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- ======== FEATURES SECTION ======== -->
-<section class="features">
+<section class="features" id="features">
     <div class="container">
         <h2 class="section-title">Tại sao chọn <span class="highlight">TechPro</span>?</h2>
         <p class="section-subtitle">Cam kết chất lượng — Giá tốt nhất thị trường — Hỗ trợ 24/7</p>
@@ -101,138 +166,93 @@ get_header();
     </div>
 </section>
 
+<!-- ======== PRODUCT CATEGORIES ======== -->
+<?php if ( $categories && ! is_wp_error($categories) && count($categories) > 0 ) : ?>
+<section class="home-categories">
+    <div class="container">
+        <h2 class="section-title">Danh mục <span class="highlight">sản phẩm</span></h2>
+        <p class="section-subtitle">Khám phá sản phẩm theo từng lĩnh vực</p>
+        <div class="home-categories-grid">
+            <?php
+            $cat_icons = [
+                'laptop'     => '💻',
+                'smartphone' => '📱',
+                'tablet'     => '📟',
+                'phu-kien'   => '⌨️',
+                'am-thanh'   => '🎧',
+                'man-hinh'   => '🖥️',
+            ];
+            foreach ( $categories as $cat ) :
+                $icon = $cat_icons[$cat->slug] ?? '📦';
+                $cat_image = get_term_meta( $cat->term_id, '_category_image', true );
+            ?>
+            <a href="<?php echo esc_url(get_term_link($cat)); ?>" class="home-category-card">
+                <div class="home-category-icon">
+                    <?php if ( $cat_image ) : ?>
+                        <img src="<?php echo esc_url(wp_get_attachment_image_url($cat_image, 'thumbnail')); ?>" alt="<?php echo esc_attr($cat->name); ?>">
+                    <?php else : ?>
+                        <span><?php echo $icon; ?></span>
+                    <?php endif; ?>
+                </div>
+                <h3><?php echo esc_html($cat->name); ?></h3>
+                <span class="home-category-count"><?php echo intval($cat->count); ?> sản phẩm</span>
+            </a>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</section>
+<?php endif; ?>
+
 <!-- ======== FEATURED PRODUCTS ======== -->
-<section class="products">
+<section class="products" id="products">
     <div class="container">
         <h2 class="section-title">Sản phẩm <span class="highlight">nổi bật</span></h2>
-        <p class="section-subtitle">Những sản phẩm được khách hàng yêu thích nhất tháng này</p>
-
-        <div class="products-filter">
-            <button class="filter-btn active">Tất cả</button>
-            <button class="filter-btn">Laptop</button>
-            <button class="filter-btn">Smartphone</button>
-            <button class="filter-btn">Tablet</button>
-            <button class="filter-btn">Phụ kiện</button>
-        </div>
+        <p class="section-subtitle">Những sản phẩm được khách hàng yêu thích nhất</p>
 
         <div class="products-grid">
-            <!-- Product 1 -->
-            <div class="product-card">
-                <div class="product-image">
-                    <span>💻</span>
-                    <span class="product-badge">Hot</span>
+            <?php if ( $featured_products->have_posts() ) : ?>
+                <?php while ( $featured_products->have_posts() ) : $featured_products->the_post();
+                    get_template_part( 'template-parts/product', 'card' );
+                endwhile; wp_reset_postdata(); ?>
+            <?php else : ?>
+                <div class="no-results" style="grid-column:1/-1;">
+                    <p>Sản phẩm đang được cập nhật. Vui lòng quay lại sau.</p>
                 </div>
-                <div class="product-info">
-                    <div class="product-category">Laptop</div>
-                    <div class="product-name">TechPro UltraBook X15 Pro</div>
-                    <div class="product-desc">Intel Core i7-13700H, RAM 16GB, SSD 512GB, màn hình OLED 15.6" 2.8K</div>
-                    <div class="product-footer">
-                        <div class="product-price">
-                            28.990.000₫
-                            <span class="original">35.000.000₫</span>
-                        </div>
-                        <a href="#" class="product-btn">Xem chi tiết</a>
-                    </div>
-                </div>
-            </div>
-            <!-- Product 2 -->
-            <div class="product-card">
-                <div class="product-image" style="background: linear-gradient(135deg,#f0fff4,#e8fef0)">
-                    <span>📱</span>
-                    <span class="product-badge new">Mới</span>
-                </div>
-                <div class="product-info">
-                    <div class="product-category">Smartphone</div>
-                    <div class="product-name">TechPro Nova Z9 Ultra</div>
-                    <div class="product-desc">Snapdragon 8 Gen 3, RAM 12GB, camera 200MP, pin 5000mAh sạc 120W</div>
-                    <div class="product-footer">
-                        <div class="product-price">
-                            18.490.000₫
-                            <span class="original">22.000.000₫</span>
-                        </div>
-                        <a href="#" class="product-btn">Xem chi tiết</a>
-                    </div>
-                </div>
-            </div>
-            <!-- Product 3 -->
-            <div class="product-card">
-                <div class="product-image" style="background: linear-gradient(135deg,#fff8f0,#fef0e8)">
-                    <span>📟</span>
-                    <span class="product-badge">Sale</span>
-                </div>
-                <div class="product-info">
-                    <div class="product-category">Tablet</div>
-                    <div class="product-name">TechPro Pad Pro 12.9</div>
-                    <div class="product-desc">Chip M3, màn hình Liquid Retina XDR, 256GB, hỗ trợ bút cảm ứng thế hệ 2</div>
-                    <div class="product-footer">
-                        <div class="product-price">
-                            22.990.000₫
-                            <span class="original">28.000.000₫</span>
-                        </div>
-                        <a href="#" class="product-btn">Xem chi tiết</a>
-                    </div>
-                </div>
-            </div>
-            <!-- Product 4 -->
-            <div class="product-card">
-                <div class="product-image" style="background: linear-gradient(135deg,#f8f0ff,#f0e8ff)">
-                    <span>🎧</span>
-                </div>
-                <div class="product-info">
-                    <div class="product-category">Âm thanh</div>
-                    <div class="product-name">TechPro SoundElite ANC Pro</div>
-                    <div class="product-desc">Tai nghe chống ồn chủ động ANC, driver 40mm, kết nối Bluetooth 5.3, pin 30 giờ</div>
-                    <div class="product-footer">
-                        <div class="product-price">
-                            3.490.000₫
-                            <span class="original">4.500.000₫</span>
-                        </div>
-                        <a href="#" class="product-btn">Xem chi tiết</a>
-                    </div>
-                </div>
-            </div>
-            <!-- Product 5 -->
-            <div class="product-card">
-                <div class="product-image" style="background: linear-gradient(135deg,#f0f8ff,#e8f4ff)">
-                    <span>⌨️</span>
-                    <span class="product-badge new">Mới</span>
-                </div>
-                <div class="product-info">
-                    <div class="product-category">Phụ kiện</div>
-                    <div class="product-name">TechPro MechKey Elite RGB</div>
-                    <div class="product-desc">Bàn phím cơ TKL, switch Gateron Yellow Pro, đèn RGB per-key, hot-swap socket</div>
-                    <div class="product-footer">
-                        <div class="product-price">
-                            2.290.000₫
-                            <span class="original">2.890.000₫</span>
-                        </div>
-                        <a href="#" class="product-btn">Xem chi tiết</a>
-                    </div>
-                </div>
-            </div>
-            <!-- Product 6 -->
-            <div class="product-card">
-                <div class="product-image" style="background: linear-gradient(135deg,#fff0f5,#ffe8f0)">
-                    <span>🖥️</span>
-                    <span class="product-badge">Hot</span>
-                </div>
-                <div class="product-info">
-                    <div class="product-category">Màn hình</div>
-                    <div class="product-name">TechPro ProDisplay 4K 27"</div>
-                    <div class="product-desc">IPS 4K 144Hz, độ phủ màu 100% sRGB, cổng USB-C 90W, đế chỉnh độ cao</div>
-                    <div class="product-footer">
-                        <div class="product-price">
-                            8.990.000₫
-                            <span class="original">11.500.000₫</span>
-                        </div>
-                        <a href="#" class="product-btn">Xem chi tiết</a>
-                    </div>
-                </div>
-            </div>
+            <?php endif; ?>
         </div>
 
         <div style="text-align:center; margin-top:3rem;">
             <a href="<?php echo esc_url(home_url('/san-pham')); ?>" class="btn btn-outline">Xem tất cả sản phẩm →</a>
+        </div>
+    </div>
+</section>
+
+<!-- ======== SERVICES / POLICIES ======== -->
+<section class="services-section">
+    <div class="container">
+        <h2 class="section-title">Dịch vụ & <span class="highlight">Chính sách</span></h2>
+        <p class="section-subtitle">Cam kết mang đến trải nghiệm mua sắm tốt nhất</p>
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="service-icon">🚚</div>
+                <h3>Giao hàng miễn phí</h3>
+                <p>Miễn phí vận chuyển cho đơn hàng trên 500.000₫ tại TP.HCM và Hà Nội. Giao toàn quốc 1–3 ngày.</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">🔧</div>
+                <h3>Bảo hành tận nơi</h3>
+                <p>Đội ngũ kỹ thuật viên đến tận nơi sửa chữa và bảo hành sản phẩm tại TP.HCM.</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">💳</div>
+                <h3>Thanh toán linh hoạt</h3>
+                <p>Hỗ trợ thanh toán tiền mặt, chuyển khoản, và trả góp 0% lãi suất qua các đối tác tài chính.</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">📦</div>
+                <h3>Đổi trả dễ dàng</h3>
+                <p>Chính sách đổi trả trong 7 ngày nếu sản phẩm lỗi. Hoàn tiền 100% nếu sản phẩm không đúng mô tả.</p>
+            </div>
         </div>
     </div>
 </section>
@@ -243,21 +263,21 @@ get_header();
         <h2>Sẵn sàng nâng cấp công nghệ của bạn?</h2>
         <p>Hơn 50.000 khách hàng đã tin tưởng TechPro. Tư vấn miễn phí, giao hàng tận nơi, bảo hành chính hãng.</p>
         <div class="cta-actions">
-            <a href="<?php echo esc_url(home_url('/san-pham')); ?>" class="btn btn-primary">🛒 Mua ngay hôm nay</a>
-            <a href="<?php echo esc_url(home_url('/lien-he')); ?>" class="btn btn-secondary">💬 Chat với chuyên viên</a>
+            <a href="<?php echo esc_url(home_url('/san-pham')); ?>" class="btn btn-primary">🛒 Xem sản phẩm ngay</a>
+            <a href="<?php echo esc_url(home_url('/lien-he')); ?>" class="btn btn-secondary">💬 Tư vấn miễn phí</a>
         </div>
     </div>
 </section>
 
 <!-- ======== TESTIMONIALS ======== -->
-<section class="testimonials">
+<section class="testimonials" id="testimonials">
     <div class="container">
         <h2 class="section-title">Khách hàng <span class="highlight">nói gì</span> về TechPro?</h2>
-        <p class="section-subtitle">Hàng nghìn phản hồi tích cực từ khách hàng thực</p>
+        <p class="section-subtitle">Đánh giá từ khách hàng thực tế — <em>Nội dung demo mang tính minh họa</em></p>
         <div class="testimonials-grid">
             <div class="testimonial-card">
                 <div class="stars">★★★★★</div>
-                <p class="testimonial-text">"Mua chiếc TechPro UltraBook X15 được 3 tháng, máy chạy cực mượt, pin trâu hơn mong đợi. Giá so với các nơi khác thì TechPro rẻ hơn hẳn mà lại được tặng thêm balo và chuột. Sẽ tiếp tục ủng hộ!"</p>
+                <p class="testimonial-text">"Mua chiếc TechPro UltraBook X15 được 3 tháng, máy chạy cực mượt, pin trâu hơn mong đợi. Giá so với các nơi khác thì TechPro rẻ hơn hẳn mà lại được tặng thêm balo và chuột."</p>
                 <div class="testimonial-author">
                     <div class="author-avatar">NM</div>
                     <div>
@@ -268,7 +288,7 @@ get_header();
             </div>
             <div class="testimonial-card">
                 <div class="stars">★★★★★</div>
-                <p class="testimonial-text">"Đặt hàng lúc 9 giờ sáng, nhận máy lúc 2 giờ chiều cùng ngày. Nhân viên giao hàng rất chuyên nghiệp, hỗ trợ setup ban đầu tận tình. Chiếc Nova Z9 Ultra chụp ảnh đẹp không thua gì máy ảnh!"</p>
+                <p class="testimonial-text">"Đặt hàng lúc 9 giờ sáng, nhận máy lúc 2 giờ chiều cùng ngày. Nhân viên giao hàng rất chuyên nghiệp, hỗ trợ setup ban đầu tận tình. Chiếc Nova Z9 Ultra chụp ảnh đẹp!"</p>
                 <div class="testimonial-author">
                     <div class="author-avatar">TL</div>
                     <div>
@@ -279,7 +299,7 @@ get_header();
             </div>
             <div class="testimonial-card">
                 <div class="stars">★★★★★</div>
-                <p class="testimonial-text">"Đã mua qua nhiều cửa hàng khác nhau nhưng TechPro là nơi tôi tin tưởng nhất. Sản phẩm chính hãng, nhân viên tư vấn nhiệt tình không ép mua. Đặc biệt dịch vụ bảo hành nhanh chóng và minh bạch."</p>
+                <p class="testimonial-text">"TechPro là nơi tôi tin tưởng nhất. Sản phẩm chính hãng, nhân viên tư vấn nhiệt tình không ép mua. Dịch vụ bảo hành nhanh chóng và minh bạch."</p>
                 <div class="testimonial-author">
                     <div class="author-avatar">PH</div>
                     <div>
@@ -287,6 +307,86 @@ get_header();
                         <div class="author-role">Doanh nhân • Đà Nẵng</div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ======== FAQ SECTION ======== -->
+<?php if ( $faqs->have_posts() ) : ?>
+<section class="home-faq">
+    <div class="container">
+        <h2 class="section-title">Câu hỏi <span class="highlight">thường gặp</span></h2>
+        <p class="section-subtitle">Giải đáp nhanh những thắc mắc phổ biến</p>
+        <div class="faq-container faq-container--home">
+            <?php while ( $faqs->have_posts() ) : $faqs->the_post(); ?>
+            <div class="faq-item">
+                <button class="faq-question" aria-expanded="false">
+                    <span><?php the_title(); ?></span>
+                    <span class="faq-toggle">+</span>
+                </button>
+                <div class="faq-answer" role="region">
+                    <div class="faq-answer-inner">
+                        <?php the_content(); ?>
+                    </div>
+                </div>
+            </div>
+            <?php endwhile; wp_reset_postdata(); ?>
+        </div>
+        <div style="text-align:center;margin-top:2rem;">
+            <a href="<?php echo esc_url(home_url('/cau-hoi-thuong-gap')); ?>" class="btn btn-outline">Xem tất cả câu hỏi →</a>
+        </div>
+    </div>
+</section>
+<?php endif; ?>
+
+<!-- ======== LATEST NEWS ======== -->
+<?php if ( $latest_posts->have_posts() ) : ?>
+<section class="home-news">
+    <div class="container">
+        <h2 class="section-title">Tin tức <span class="highlight">mới nhất</span></h2>
+        <p class="section-subtitle">Cập nhật thông tin công nghệ và khuyến mãi hấp dẫn</p>
+        <div class="news-grid">
+            <?php while ( $latest_posts->have_posts() ) : $latest_posts->the_post(); ?>
+            <article class="news-card">
+                <a href="<?php the_permalink(); ?>" class="news-card-link">
+                    <div class="news-card-image">
+                        <?php if ( has_post_thumbnail() ) : ?>
+                            <?php the_post_thumbnail( 'product-card', [ 'alt' => esc_attr(get_the_title()), 'loading' => 'lazy' ] ); ?>
+                        <?php else : ?>
+                            <span class="news-card-placeholder">📰</span>
+                        <?php endif; ?>
+                    </div>
+                    <div class="news-card-content">
+                        <div class="news-card-meta">
+                            <time datetime="<?php echo get_the_date('c'); ?>"><?php echo get_the_date('d/m/Y'); ?></time>
+                        </div>
+                        <h3 class="news-card-title"><?php the_title(); ?></h3>
+                        <p class="news-card-excerpt"><?php echo wp_trim_words(get_the_excerpt(), 15, '...'); ?></p>
+                        <span class="news-card-readmore">Đọc thêm →</span>
+                    </div>
+                </a>
+            </article>
+            <?php endwhile; wp_reset_postdata(); ?>
+        </div>
+        <div style="text-align:center;margin-top:2rem;">
+            <a href="<?php echo esc_url(home_url('/tin-tuc')); ?>" class="btn btn-outline">Xem tất cả tin tức →</a>
+        </div>
+    </div>
+</section>
+<?php endif; ?>
+
+<!-- ======== CONTACT CTA ======== -->
+<section class="contact-cta">
+    <div class="container">
+        <div class="contact-cta-grid">
+            <div>
+                <h2>Bạn cần tư vấn?</h2>
+                <p>Đội ngũ chuyên gia TechPro luôn sẵn sàng hỗ trợ bạn chọn sản phẩm phù hợp nhất.</p>
+            </div>
+            <div class="contact-cta-actions">
+                <a href="tel:+842899999999" class="btn btn-primary btn-lg">📞 Gọi ngay: 028 9999 9999</a>
+                <a href="<?php echo esc_url(home_url('/lien-he')); ?>" class="btn btn-outline btn-lg">📬 Gửi yêu cầu liên hệ</a>
             </div>
         </div>
     </div>
